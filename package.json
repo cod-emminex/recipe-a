@@ -1,0 +1,30 @@
+{
+  "name": "recipe-a",
+  "version": "1.0.0",
+  "description": "A basic Front End Web App made using HTML, CSS and Bootstrap.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://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@github.com/cod-emminex/recipe-a.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cod-emminex/recipe-a/issues"
+  },
+  "homepage": "https://github.com/cod-emminex/recipe-a#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "mongoose": "^8.9.3",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "prettier": "^3.4.2"
+  }
+}
