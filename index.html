@@ -62,15 +62,15 @@
     <!-- JUMBOTRON -->
     <div class="jumbotron">
       <div class="container text-center">
-        <h1>Discover Global Recipes</h1>
-        <p>Explore and share authentic recipes from around the world</p>
-        <div class="btn-group">
-          <a href="#add-recipe" class="btn btn-large btn-warning"
+        <h1 class="display-heading">Recipe Haven</h1>
+        <p class="lead-text">
+          Discover the art of cooking with our curated collection of recipes
+        </p>
+        <div class="cta-buttons">
+          <a href="#add-recipe" class="btn btn-lg btn-warning"
             >Share Your Recipe</a
           >
-          <a href="#recipes" class="btn btn-large btn-default"
-            >Browse Recipes</a
-          >
+          <a href="#recipes" class="btn btn-lg btn-default">Explore Recipes</a>
         </div>
       </div>
     </div>
@@ -164,73 +164,101 @@
       </div>
     </div>
     <!-- Add Recipe Form -->
-    <div class="container" id="add-recipe">
-      <div class="page-header">
-        <h2>Share Your Recipe</h2>
+    <section id="add-recipe" class="add-recipe-section">
+      <div class="container">
+        <div class="section-title">
+          <h2>Share Your Recipe</h2>
+          <p class="subtitle">Let the world taste your creation</p>
+        </div>
+        <form id="recipe-form" onsubmit="submitRecipe(event)">
+          <div class="row">
+            <div class="col-md-8 offset-md-2">
+              <div class="form-group">
+                <label class="form-label">Recipe Title</label>
+                <input
+                  type="text"
+                  name="title"
+                  class="form-control input-lg"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea
+                  name="description"
+                  class="form-control"
+                  rows="3"
+                  required
+                ></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Ingredients</label>
+                <div class="ingredients-container">
+                  <textarea
+                    name="ingredients"
+                    class="form-control"
+                    rows="5"
+                    required
+                  ></textarea>
+                  <small class="form-text text-muted"
+                    >Enter each ingredient on a new line</small
+                  >
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Instructions</label>
+                <textarea
+                  name="instructions"
+                  class="form-control"
+                  rows="5"
+                  required
+                ></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Recipe Image</label>
+                <div class="custom-file-upload">
+                  <input type="file" name="image" accept="image/*" />
+                </div>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-lg">
+                  Share Recipe
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
       </div>
-      <form id="recipe-form" onsubmit="submitRecipe(event)" class="mb-5">
-        <div class="row">
-          <div class="col-md-8">
-            <div class="form-group">
-              <label for="recipe-title">Recipe Title</label>
-              <input
-                type="text"
-                name="title"
-                id="recipe-title"
-                class="form-control"
-                placeholder="Enter recipe name"
-                required
-              />
+    </section>
+    <section class="featured-recipes">
+      <div class="container">
+        <div class="section-title">
+          <h2>Featured Recipes</h2>
+          <p class="subtitle">Our most loved dishes</p>
+        </div>
+        <div class="row" id="recipes-container">
+          <!-- Recipe cards will be dynamically inserted here -->
+          <div class="col-md-4">
+            <div class="recipe-card">
+              <div class="recipe-image">
+                <img src="path_to_image" alt="Recipe Name" />
+                <div class="recipe-category">Italian</div>
+              </div>
+              <div class="recipe-content">
+                <h5 class="recipe-title">Classic Margherita Pizza</h5>
+                <p class="recipe-description">
+                  Authentic Italian pizza with fresh basil and mozzarella
+                </p>
+                <div class="recipe-meta">
+                  <span><i class="far fa-clock"></i> 30 mins</span>
+                  <span><i class="fas fa-user-friends"></i> Serves 4</span>
+                </div>
+              </div>
             </div>
-            <div class="form-group">
-              <label for="recipe-description">Description</label>
-              <textarea
-                name="description"
-                id="recipe-description"
-                class="form-control"
-                rows="3"
-                placeholder="Brief description of your recipe"
-                required
-              ></textarea>
-            </div>
-            <div class="form-group">
-              <label for="recipe-ingredients">Ingredients</label>
-              <textarea
-                name="ingredients"
-                id="recipe-ingredients"
-                class="form-control"
-                rows="5"
-                placeholder="Enter ingredients (one per line)"
-                required
-              ></textarea>
-            </div>
-            <div class="form-group">
-              <label for="recipe-instructions">Cooking Instructions</label>
-              <textarea
-                name="instructions"
-                id="recipe-instructions"
-                class="form-control"
-                rows="5"
-                placeholder="Step by step cooking instructions"
-                required
-              ></textarea>
-            </div>
-            <div class="form-group">
-              <label for="recipe-image">Recipe Image</label>
-              <input
-                type="file"
-                name="image"
-                id="recipe-image"
-                class="form-control"
-                accept="image/*"
-              />
-            </div>
-            <button type="submit" class="btn btn-primary">Share Recipe</button>
           </div>
         </div>
-      </form>
-    </div>
-
+      </div>
+    </section>
     <!-- Recipe Gallery -->
     <div class="container" id="recipes">
       <div class="page-header">
@@ -269,37 +297,60 @@
         </div>
       </div>
     </div>
-
+    <section id="categories" class="categories-section">
+      <div class="container">
+        <div class="section-title">
+          <h2>Browse Categories</h2>
+          <p class="subtitle">Find recipes by cuisine type</p>
+        </div>
+        <div class="row">
+          <div class="col-md-3 col-sm-6">
+            <div class="category-card">
+              <i class="fas fa-pizza-slice category-icon"></i>
+              <h4>Italian</h4>
+              <p>Classic Mediterranean flavors</p>
+            </div>
+          </div>
+          <!-- Add more category cards similarly -->
+        </div>
+      </div>
+    </section>
     <!-- Footer -->
-    <footer class="mt-5">
-      <hr />
-      <div class="container text-center">
-        <h3>Connect With Us</h3>
-        <ul class="list-inline">
-          <li>
-            <a href="#">
-              <div style="font-size: 2em">
-                <i class="fab fa-facebook-square"></i>
-              </div>
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              <div style="font-size: 2em"><i class="fab fa-instagram"></i></div>
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              <div style="font-size: 2em">
-                <i class="fab fa-twitter-square"></i>
-              </div>
-            </a>
-          </li>
-        </ul>
-        <p>&copy; 2024 Global Recipe Hub. All rights reserved.</p>
+    <footer class="site-footer">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6">
+            <h3>Recipe Haven</h3>
+            <p class="footer-description">
+              Bringing global flavors to your kitchen
+            </p>
+          </div>
+          <div class="col-md-6">
+            <h4 class="social-heading">Connect With Us</h4>
+            <ul class="social-links list-inline">
+              <li>
+                <a href="#" class="social-link">
+                  <i class="fab fa-facebook-square"></i>
+                </a>
+              </li>
+              <li>
+                <a href="#" class="social-link">
+                  <i class="fab fa-instagram"></i>
+                </a>
+              </li>
+              <li>
+                <a href="#" class="social-link">
+                  <i class="fab fa-twitter-square"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2024 Recipe Haven. All rights reserved.</p>
+        </div>
       </div>
     </footer>
-
     <!-- Scripts -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
