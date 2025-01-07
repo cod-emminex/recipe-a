@@ -1,6 +1,67 @@
 // js/script.js
 const API_URL = 'http://localhost:3000/api';
+// Database Schema
 
+// User Schema
+const userSchema = {
+  id: "UUID",
+  username: "String, unique",
+  email: "String, unique",
+  password: "String, hashed",
+  profileImage: "String, optional",
+  createdAt: "Timestamp",
+  updatedAt: "Timestamp",
+  favorites: ["Recipe IDs"]
+}
+
+// Recipe Schema
+const recipeSchema = {
+  id: "UUID",
+  title: "String",
+  description: "String",
+  authorId: "UUID, ref: User",
+  ingredients: [{
+    name: "String",
+    amount: "Number",
+    unit: "String"
+  }],
+  instructions: ["String"],
+  prepTime: "Number, minutes",
+  cookTime: "Number, minutes",
+  servings: "Number",
+  difficulty: "String (easy, medium, hard)",
+  category: ["String"],
+  tags: ["String"],
+  image: "String",
+  ratings: [{
+    userId: "UUID, ref: User",
+    rating: "Number (1-5)",
+    review: "String",
+    createdAt: "Timestamp"
+  }],
+  averageRating: "Number",
+  createdAt: "Timestamp",
+  updatedAt: "Timestamp"
+}
+
+// Category Schema
+const categorySchema = {
+  id: "UUID",
+  name: "String",
+  description: "String",
+  image: "String",
+  recipeCount: "Number"
+}
+
+// Comment Schema
+const commentSchema = {
+  id: "UUID",
+  recipeId: "UUID, ref: Recipe",
+  userId: "UUID, ref: User",
+  content: "String",
+  createdAt: "Timestamp",
+  updatedAt: "Timestamp"
+}
 // Load recipes when page loads
 document.addEventListener('DOMContentLoaded', loadRecipes);
 
@@ -68,6 +129,49 @@ async function deleteRecipe(recipeId) {
     }
   }
 }
+document.addEventListener('DOMContentLoaded', function () {
+  // Star Rating Functionality
+  const starContainer = document.querySelector('.star-rating');
+  if (starContainer) {
+    const stars = starContainer.querySelectorAll('i');
+
+    stars.forEach(star => {
+      star.addEventListener('mouseover', function () {
+        const rating = this.dataset.rating;
+        highlightStars(rating);
+      });
+
+      star.addEventListener('click', function () {
+        const rating = this.dataset.rating;
+        setRating(rating);
+      });
+    });
+
+    starContainer.addEventListener('mouseleave', function () {
+      const currentRating = starContainer.dataset.currentRating || 0;
+      highlightStars(currentRating);
+    });
+  }
+
+  function highlightStars(rating) {
+    const stars = document.querySelectorAll('.star-rating i');
+    stars.forEach((star, index) => {
+      if (index < rating) {
+        star.classList.remove('far');
+        star.classList.add('fas');
+      } else {
+        star.classList.remove('fas');
+        star.classList.add('far');
+      }
+    });
+  }
+
+  function setRating(rating) {
+    const starContainer = document.querySelector('.star-rating');
+    starContainer.dataset.currentRating = rating;
+    // You can add AJAX call here to save the rating
+  }
+});
 // Initialize carousel with settings
 $(document).ready(function () {
   $('#recipe-carousel').carousel({
