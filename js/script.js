@@ -80,3 +80,64 @@ $(document).ready(function () {
 function getRatingStars(rating) {
   return '⭐'.repeat(rating || 0);
 }
+// Enhanced Form Navigation
+document.addEventListener('DOMContentLoaded', function () {
+  const form = document.getElementById('recipe-form');
+  const sections = form.getElementsByClassName('form-section');
+  const steps = document.getElementsByClassName('step');
+  let currentSection = 0;
+
+  // Next button handler
+  document.querySelector('.next-step').addEventListener('click', () => {
+    sections[currentSection].classList.remove('active');
+    steps[currentSection].classList.remove('active');
+    currentSection++;
+    sections[currentSection].classList.add('active');
+    steps[currentSection].classList.add('active');
+    updateNavigation();
+  });
+
+  // Previous button handler
+  document.querySelector('.prev-step').addEventListener('click', () => {
+    sections[currentSection].classList.remove('active');
+    steps[currentSection].classList.remove('active');
+    currentSection--;
+    sections[currentSection].classList.add('active');
+    steps[currentSection].classList.add('active');
+    updateNavigation();
+  });
+
+  // Image upload preview
+  const imageUpload = document.getElementById('recipe-image');
+  const uploadPreview = document.querySelector('.upload-preview');
+
+  uploadPreview.addEventListener('click', () => {
+    imageUpload.click();
+  });
+
+  imageUpload.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        uploadPreview.style.backgroundImage = `url(${e.target.result})`;
+        uploadPreview.innerHTML = '';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Dynamic ingredient addition
+  document.querySelector('.ingredient-item .btn-fancy').addEventListener('click', () => {
+    const newIngredient = document.querySelector('.ingredient-item').cloneNode(true);
+    newIngredient.querySelector('input').value = '';
+    document.querySelector('.ingredients-list').appendChild(newIngredient);
+  });
+
+  // Dynamic step addition
+  document.querySelector('.recipe-steps .btn-fancy').addEventListener('click', () => {
+    const newStep = document.querySelector('.recipe-steps li').cloneNode(true);
+    newStep.querySelector('textarea').value = '';
+    document.querySelector('.recipe-steps').appendChild(newStep);
+  });
+});
