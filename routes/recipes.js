@@ -16,13 +16,25 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Create recipe
+// Create new recipe
 router.post('/', auth, async (req, res) => {
   try {
+    const {title, description, ingredients, instructions, prepTime, cookTime, servings, difficulty, category, image} = req.body;
+
     const recipe = new Recipe({
-      ...req.body,
+      title,
+      description,
+      ingredients,
+      instructions,
+      prepTime,
+      cookTime,
+      servings,
+      difficulty,
+      category,
+      image,
       authorId: req.user.userId
     });
+
     await recipe.save();
     res.status(201).json(recipe);
   } catch (error) {
@@ -30,10 +42,27 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
+// Get single recipe
+router.get('/:id', async (req, res) => {
+  try {
+    const recipe = await Recipe.findById(req.params.id)
+      .populate('authorId', 'username');
+
+    if (!recipe) {
+      return res.status(404).json({message: 'Recipe not found'});
+    }
+
+    res.json(recipe);
+  } catch (error) {
+    res.status(500).json({message: 'Error fetching recipe'});
+  }
+});
+
 // Update recipe
 router.patch('/:id', auth, async (req, res) => {
   try {
     const recipe = await Recipe.findById(req.params.id);
+
     if (!recipe) {
       return res.status(404).json({message: 'Recipe not found'});
     }
@@ -54,6 +83,7 @@ router.patch('/:id', auth, async (req, res) => {
 router.delete('/:id', auth, async (req, res) => {
   try {
     const recipe = await Recipe.findById(req.params.id);
+
     if (!recipe) {
       return res.status(404).json({message: 'Recipe not found'});
     }
@@ -62,79 +92,11 @@ router.delete('/:id', auth, async (req, res) => {
       return res.status(403).json({message: 'Not authorized'});
     }
 
-    await recipe.remove();
-    res.json({message: 'Recipe deleted'});
+    await recipe.deleteOne();
+    res.json({message: 'Recipe deleted successfully'});
   } catch (error) {
     res.status(500).json({message: 'Error deleting recipe'});
   }
 });
-// routes/recipes.js (additional endpoints)
 
-// Search recipes
-router.get('/search', async (req, res) => {
-  try {
-    const {query, category, difficulty, time} = req.query;
-    let searchQuery = {};
-
-    // Text search
-    if (query) {
-      searchQuery.$or = [
-        {title: {$regex: query, $options: 'i'}},
-        {description: {$regex: query, $options: 'i'}}
-      ];
-    }
-
-    // Category filter
-    if (category) {
-      searchQuery.category = category;
-    }
-
-    // Difficulty filter
-    if (difficulty) {
-      searchQuery.difficulty = difficulty;
-    }
-
-    // Time filter
-    if (time) {
-      searchQuery.totalTime = {$lte: parseInt(time)};
-    }
-
-    const recipes = await Recipe.find(searchQuery)
-      .populate('authorId', 'username')
-      .sort({createdAt: -1});
-
-    res.json(recipes);
-  } catch (error) {
-    res.status(500).json({message: 'Error searching recipes'});
-  }
-});
-
-// Get recipe recommendations
-router.get('/recommendations', auth, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.userId);
-    const userFavorites = user.favorites;
-
-    // Get categories from user's favorite recipes
-    const favoriteRecipes = await Recipe.find({
-      _id: {$in: userFavorites}
-    });
-
-    const favoriteCategories = [...new Set(
-      favoriteRecipes.flatMap(recipe => recipe.category)
-    )];
-
-    // Find similar recipes
-    const recommendations = await Recipe.find({
-      _id: {$nin: userFavorites},
-      category: {$in: favoriteCategories}
-    })
-      .limit(10)
-      .populate('authorId', 'username');
-
-    res.json(recommendations);
-  } catch (error) {
-    res.status(500).json({message: 'Error getting recommendations'});
-  }
-});
 module.exports = router;
