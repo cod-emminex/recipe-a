@@ -1,0 +1,73 @@
+ <!-- Add Recipe Form -->
+  <section id="add-recipe" class="add-recipe-section glass-card">
+    <div class="container">
+      <div class="section-title">
+        <h2>Share Your Recipe</h2>
+        <div class="recipe-form-steps">
+          <span class="step active">1. Basic Info</span>
+          <span class="step">2. Ingredients</span>
+          <span class="step">3. Instructions</span>
+        </div>
+      </div>
+      <form id="recipe-form" class="modern-form" onsubmit="submitRecipe(event)" />
+      <div class="form-section active" id="basic-info">
+        <div class="form-floating mb-3">
+          <label for="recipe-title">Recipe Title</label>
+          <input type="text" class="form-control" id="recipe-title" placeholder="Add a title" required />
+        </div>
+        <!-- Updated Category Dropdown Section -->
+        <div class="form-group mb-4">
+          <label class="form-label">Category</label>
+          <select class="form-control custom-select" id="recipe-category" placeholder="Select a category" required>
+            <option value="" disabled selected>Select a category</option>
+            <option value="main-course">Main Course</option>
+            <option value="appetizer">Appetizer</option>
+            <option value="dessert">Dessert</option>
+            <option value="beverage">Beverage</option>
+            <option value="salad">Salad</option>
+            <option value="soup">Soup</option>
+            <option value="snack">Snack</option>
+          </select>
+        </div>
+        <div class="recipe-image-upload">
+          <div class="upload-preview">
+            <i class="fas fa-camera"></i>
+            <span>Drop image here or click to upload</span>
+          </div>
+          <input type="file" hidden id="recipe-image" accept="image/*" />
+        </div>
+      </div>
+
+      <div class="form-section" id="ingredients">
+        <div class="ingredients-list">
+          <div class="ingredient-item">
+            <input type="text" class="form-control" placeholder="Ingredient" />
+            <input type="text" class="form-control" placeholder="Amount" />
+            <button type="button" class="btn-fancy btn-sm">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section" id="instructions">
+        <ul class="recipe-steps">
+          <li>
+            <textarea class="form-control" placeholder="Enter step instructions"></textarea>
+            <button type="button" class="btn-fancy btn-sm">+</button>
+          </li>
+        </ul>
+      </div>
+
+      <div class="form-navigation">
+        <button type="button" class="btn-fancy prev-step">Previous</button>
+        <button type="button" class="btn-fancy next-step">Next</button>
+        <button type="submit" class="btn-fancy submit-recipe">
+          Share Recipe
+        </button>
+      </div>
+      </form>
+    </div>
+  </section>
+
+
+
+
