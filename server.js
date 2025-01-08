@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path'); // Import the path module
 
 // Initialize app
 const app = express();
@@ -17,22 +18,16 @@ const categoryRoutes = require('./routes/categories');
 // server.js
 const uploadRoutes = require('./routes/upload');
 const collectionRoutes = require('./routes/collections');
-
-// Add routes
-app.use('/api/upload', uploadRoutes);
-app.use('/api/categories', categoryRoutes);
-app.use('/api/collections', collectionRoutes);
-
+// Serve static files from the root directory
+app.use(express.static(__dirname));
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 // Database connection
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect(process.env.MONGODB_URI,
+)
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
@@ -46,9 +41,12 @@ app.use('/api/upload', uploadRoutes);
 
 // Basic route
 app.get('/', (req, res) => {
-  res.json({message: 'Welcome to Recipe API'});
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
-
+// Catch-all route to serve index.html for all other routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
