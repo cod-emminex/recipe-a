@@ -69,5 +69,174 @@
   </section>
 
 
+ <!-- Recipe Gallery -->
+    <div class="container" id="recipes">
+      <div class="page-header">
+        <h2>Recipe Collection <small>Explore our delicious recipes</small></h2>
+      </div>
+      <div id="recipes-container" class="row">
+        <!-- Recipes will be loaded here by JavaScript -->
+      </div>
+    </div>
+
+    <!-- Categories Section -->
+    <div class="container" id="categories">
+      <div class="page-header">
+        <h2>Recipe Categories</h2>
+      </div>
+      <div class="row">
+        <div class="col-md-3 col-sm-6">
+          <div class="category-card">
+            <h4>Main Course</h4>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="category-card">
+            <h4>Appetizers</h4>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="category-card">
+            <h4>Desserts</h4>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="category-card">
+            <h4>Beverages</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Add this section after the recipe details -->
+    <div class="recipe-ratings glass-card">
+      <div class="section-title">
+        <h3>Ratings & Reviews</h3>
+      </div>
+      <div class="rating-stats">
+        <div class="average-rating">
+          <span class="rating-number">4.5</span>
+          <div class="rating-stars">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star-half-alt"></i>
+          </div>
+          <span class="rating-count">(125 reviews)</span>
+        </div>
+        <div class="rating-bars">
+          <div class="rating-bar-item">
+            <span>5 stars</span>
+            <div class="progress">
+              <div class="progress-bar" style="width: 75%"></div>
+            </div>
+            <span>75%</span>
+          </div>
+          <!-- Add more rating bars similarly -->
+        </div>
+      </div>
+      <div class="review-form">
+        <h4>Write a Review</h4>
+        <form id="review-form">
+          <div class="star-rating">
+            <i class="far fa-star" data-rating="1"></i>
+            <i class="far fa-star" data-rating="2"></i>
+            <i class="far fa-star" data-rating="3"></i>
+            <i class="far fa-star" data-rating="4"></i>
+            <i class="far fa-star" data-rating="5"></i>
+          </div>
+          <textarea
+            class="form-control"
+            placeholder="Share your cooking experience..."
+          ></textarea>
+          <button type="submit" class="btn-fancy">Submit Review</button>
+        </form>
+      </div>
+    </div>
+    <section class="related-recipes">
+      <div class="container">
+        <div class="section-title">
+          <h2>You Might Also Like</h2>
+        </div>
+        <div class="recipe-slider">
+          <div class="row">
+            <!-- Recipe cards will be dynamically inserted here -->
+            <div class="col-md-4">
+              <div class="recipe-card glass-card">
+                <!-- Recipe card content -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="cooking-tips glass-card">
+      <div class="section-title">
+        <h3>Pro Tips</h3>
+      </div>
+      <div class="tips-content">
+        <div class="tip-item">
+          <i class="fas fa-lightbulb"></i>
+          <div class="tip-text">
+            <h5>Storage</h5>
+            <p>Store in an airtight container for up to 3 days.</p>
+          </div>
+        </div>
+        <div class="tip-item">
+          <i class="fas fa-temperature-high"></i>
+          <div class="tip-text">
+            <h5>Temperature</h5>
+            <p>Ensure ingredients are at room temperature before starting.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <section class="recipe-collections">
+      <div class="container">
+        <div class="section-title">
+          <h2>Popular Collections</h2>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="collection-card">
+              <img src="path_to_image" alt="Healthy Breakfast" />
+              <div class="collection-overlay">
+                <h3>Healthy Breakfast</h3>
+                <p>15 Recipes</p>
+              </div>
+            </div>
+          </div>
+          <!-- Add more collection cards -->
+        </div>
+      </div>
+    </section>
+    <div class="recipe-actions">
+      <button class="btn-fancy save-recipe" data-recipe-id="123">
+        <i class="far fa-bookmark"></i>
+        <span>Save Recipe</span>
+      </button>
+      <button class="btn-fancy share-recipe">
+        <i class="fas fa-share-alt"></i>
+        <span>Share</span>
+      </button>
+    </div>
+    <section id="categories" class="categories-section">
+      <div class="container">
+        <div class="section-title">
+          <h2>Browse Categories</h2>
+          <p class="subtitle">Find recipes by cuisine type</p>
+        </div>
+        <div class="row">
+          <div class="col-md-3 col-sm-6">
+            <div class="category-card">
+              <i class="fas fa-pizza-slice category-icon"></i>
+              <h4>Italian</h4>
+              <p>Classic Mediterranean flavors</p>
+            </div>
+          </div>
+          <!-- Add more category cards similarly -->
+        </div>
+      </div>
+    </section>
 
 
