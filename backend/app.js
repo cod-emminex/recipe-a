@@ -2,12 +2,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const path = require("path");
 require("dotenv").config();
 
-// Import routes
-const authRoutes = require("./routes/auth");
-const userRoutes = require("./routes/user");
-
+// Create Express app
 const app = express();
 
 // Middleware
@@ -15,9 +13,17 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve static files
+app.use(express.static(path.join(__dirname, "public")));
+
 // Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
+app.use("/api/auth", require("./routes/auth"));
+app.use("/api/users", require("./routes/user"));
+
+// Root route
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -36,30 +42,4 @@ app.use((req, res) => {
   });
 });
 
-// Database connection
-if (process.env.NODE_ENV !== "test") {
-  mongoose
-    .connect(process.env.MONGODB_URI)
-    .then(() => console.log("Connected to MongoDB"))
-    .catch((err) => console.error("MongoDB connection error:", err));
-}
-
 module.exports = app;
-
-// backend/app.js (add these lines)
-const morgan = require("morgan");
-
-// Add logging middleware
-app.use(morgan("dev"));
-
-// Add better error handling
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(err.status || 500).json({
-    error: {
-      message: err.message || "Internal Server Error",
-      status: err.status || 500,
-      timestamp: new Date().toISOString(),
-    },
-  });
-});
