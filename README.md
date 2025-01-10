@@ -1,4 +1,3 @@
-A basic Front End Web App made using HTML, CSS and Bootstrap.
+A simple but intercontinential recipe app
 
-View it: 
-https://soothscier.github.io/A-simple-web-app-template/index.html
+bringing all your dishes into 1 platform
