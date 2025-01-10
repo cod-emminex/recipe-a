@@ -1,0 +1,33 @@
+/* frontend/css/utils/responsive.css */
+/* For small devices */
+@media screen and (max-width: 320px) {
+  .container {
+    margin-inline: 1rem;
+  }
+}
+
+/* For medium devices */
+@media screen and (min-width: 576px) {
+  .container {
+    margin-inline: 1.5rem;
+  }
+}
+
+@media screen and (min-width: 767px) {
+  .container {
+    margin-inline: 2rem;
+  }
+}
+
+/* For large devices */
+@media screen and (min-width: 992px) {
+  .container {
+    margin-inline: auto;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .container {
+    max-width: 1120px;
+  }
+}
