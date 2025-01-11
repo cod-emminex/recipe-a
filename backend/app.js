@@ -3,8 +3,10 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
+const auth = require("./middleware/auth");
+const authRoutes = require("./routes/auth");
+const userRoutes = require("./routes/user");
 require("dotenv").config();
-
 // Create Express app
 const app = express();
 
@@ -18,8 +20,8 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Routes
 app.use("/api/auth", require("./routes/auth"));
-app.use("/api/users", require("./routes/user"));
-
+// Protected API routes
+app.use("/api/users", auth, userRoutes); // Protected routes
 // Root route
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
