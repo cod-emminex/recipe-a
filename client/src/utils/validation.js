@@ -1,44 +1,48 @@
 // client/src/utils/validation.js
-export const validateForm = (values, type) => {
+const validateEmail = (email) => {
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(email);
+};
+
+const validatePassword = (password) => {
+  return {
+    isValid: password.length >= 8,
+    message: "Password must be at least 8 characters long",
+  };
+};
+
+const validateRecipeForm = (data) => {
   const errors = {};
 
-  if (type === "register" || type === "login") {
-    if (!values.email) {
-      errors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(values.email)) {
-      errors.email = "Invalid email address";
-    }
-
-    if (!values.password) {
-      errors.password = "Password is required";
-    } else if (type === "register" && values.password.length < 8) {
-      errors.password = "Password must be at least 8 characters";
-    }
-
-    if (type === "register") {
-      if (!values.username) {
-        errors.username = "Username is required";
-      }
-    }
+  if (!data.title?.trim()) {
+    errors.title = "Title is required";
   }
 
-  if (type === "recipe") {
-    if (!values.title) {
-      errors.title = "Title is required";
-    }
+  if (!data.description?.trim()) {
+    errors.description = "Description is required";
+  }
 
-    if (!values.description) {
-      errors.description = "Description is required";
-    }
+  if (!data.ingredients?.length || !data.ingredients.some((i) => i.trim())) {
+    errors.ingredients = "At least one ingredient is required";
+  }
 
-    if (!values.ingredients || values.ingredients.length === 0) {
-      errors.ingredients = "At least one ingredient is required";
-    }
+  if (!data.steps?.length || !data.steps.some((s) => s.trim())) {
+    errors.steps = "At least one step is required";
+  }
 
-    if (!values.steps || values.steps.length === 0) {
-      errors.steps = "At least one step is required";
-    }
+  if (data.cookingTime && (isNaN(data.cookingTime) || data.cookingTime < 0)) {
+    errors.cookingTime = "Cooking time must be a positive number";
+  }
+
+  if (data.servings && (isNaN(data.servings) || data.servings < 1)) {
+    errors.servings = "Servings must be at least 1";
   }
 
   return errors;
+};
+
+export const validate = {
+  email: validateEmail,
+  password: validatePassword,
+  recipeForm: validateRecipeForm,
 };
