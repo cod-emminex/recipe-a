@@ -2,6 +2,7 @@
 import { Box, Flex, Button, Heading, Stack, useToast } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import NotificationCenter from "./NotificationCenter";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -94,6 +95,11 @@ const Navbar = () => {
             </>
           )}
         </Stack>
+        {user && (
+          <Stack spacing={4}>
+            <NotificationCenter />
+          </Stack>
+        )}
       </Flex>
     </Box>
   );
