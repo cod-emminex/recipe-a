@@ -10,6 +10,8 @@ build/
 frontend/build/
 frontend/.env
 test
+oldfiles/
+/oldfiles
 *.log
 *.log.*
 *.log-*
