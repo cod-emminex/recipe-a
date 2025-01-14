@@ -1,96 +1,76 @@
-// client/src/components/common/ImageUpload.js
-import React, { useCallback, useState } from 'react';
-import {
-  Box,
-  Image,
-  Input,
-  Text,
-  VStack,
-  Icon,
-  useToast,
-} from '@chakra-ui/react';
-import { useDropzone } from 'react-dropzone';
-import { MdCloudUpload } from 'react-icons/md';
+// src/components/common/ImageUpload.js
+import React from "react";
+import { Box, Button, Text, VStack, Image, useToast } from "@chakra-ui/react";
+import { useDropzone } from "react-dropzone";
+import { MdCloudUpload } from "react-icons/md";
 
-export const ImageUpload = ({
-  initialImage,
-  onChange,
-  maxSize = 5 * 1024 * 1024, // 5MB
-  acceptedFormats = ['image/jpeg', 'image/png', 'image/webp'],
-}) => {
-  const [preview, setPreview] = useState(initialImage);
+const ImageUpload = ({ onImageUpload, initialImage }) => {
   const toast = useToast();
 
-  const onDrop = useCallback((acceptedFiles) => {
-    const file = acceptedFiles[0];
-    if (!file) return;
-
-    if (!acceptedFormats.includes(file.type)) {
-      toast({
-        title: 'Invalid file type',
-        description: 'Please upload a JPEG, PNG, or WebP image.',
-        status: 'error',
-      });
-      return;
-    }
-
-    if (file.size > maxSize) {
-      toast({
-        title: 'File too large',
-        description: `Image must be less than ${maxSize / (1024 * 1024)}MB`,
-        status: 'error',
-      });
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setPreview(e.target.result);
-      onChange(file);
-    };
-    reader.readAsDataURL(file);
-  }, [acceptedFormats, maxSize, onChange, toast]);
-
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: acceptedFormats.join(','),
-    multiple: false,
+    accept: {
+      "image/*": [".jpeg", ".jpg", ".png", ".gif"],
+    },
+    maxSize: 5242880, // 5MB
+    onDrop: (acceptedFiles, rejectedFiles) => {
+      if (rejectedFiles.length > 0) {
+        toast({
+          title: "Error",
+          description: "File must be an image under 5MB",
+          status: "error",
+          duration: 3000,
+        });
+        return;
+      }
+
+      const file = acceptedFiles[0];
+      onImageUpload(file);
+    },
   });
 
   return (
-    <Box
-      {...getRootProps()}
-      borderWidth={2}
-      borderStyle="dashed"
-      borderRadius="md"
-      p={6}
-      cursor="pointer"
-      bg={isDragActive ? 'gray.50' : 'white'}
-      _hover={{ bg: 'gray.50' }}
-      transition="background-color 0.2s"
-    >
-      <Input {...getInputProps()} />
-      {preview ? (
-        <Image
-          src={preview}
-          alt="Recipe preview"
-          maxH="300px"
-          mx="auto"
-          objectFit="contain"
-        />
-      ) : (
-        <VStack spacing={2}>
-          <Icon as={MdCloudUpload} w={12} h={12} color="gray.400" />
-          <Text color="gray.500" textAlign="center">
-            {isDragActive
-              ? 'Drop the image here...'
-              : 'Drag and drop an image, or click to select'}
-          </Text>
-          <Text color="gray.400" fontSize="sm">
-            JPEG, PNG, or WebP, max {maxSize / (1024 * 1024)}MB
-          </Text>
-        </VStack>
-      )}
+    <Box>
+      <VStack spacing={4}>
+        {initialImage && (
+          <Image
+            src={
+              typeof initialImage === "string"
+                ? initialImage
+                : URL.createObjectURL(initialImage)
+            }
+            alt="Uploaded preview"
+            boxSize="200px"
+            objectFit="cover"
+            borderRadius="md"
+          />
+        )}
+
+        <Box
+          {...getRootProps()}
+          p={6}
+          border="2px dashed"
+          borderColor={isDragActive ? "blue.400" : "gray.200"}
+          borderRadius="md"
+          bg={isDragActive ? "blue.50" : "gray.50"}
+          cursor="pointer"
+          w="100%"
+        >
+          <input {...getInputProps()} data-testid="file-input" />
+          <VStack spacing={2}>
+            <MdCloudUpload size="2em" />
+            <Text textAlign="center">
+              {isDragActive
+                ? "Drop the image here"
+                : "Drag and drop an image, or click to select"}
+            </Text>
+            <Button size="sm" variant="outline">
+              Select Image
+            </Button>
+          </VStack>
+        </Box>
+      </VStack>
     </Box>
   );
 };
+
+export default ImageUpload;

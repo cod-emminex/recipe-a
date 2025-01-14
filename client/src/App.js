@@ -1,56 +1,86 @@
-// client/src/App.js
-import { ChakraProvider, CSSReset } from "@chakra-ui/react";
+// src/App.js
+import React from "react";
+import { ChakraProvider } from "@chakra-ui/react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
-import ProtectedRoute from "./components/ProtectedRoute";
+
+// Components
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { extendTheme, Box } from "@chakra-ui/react";
+// Pages
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import RecipeList from "./pages/RecipeList";
-import RecipeDetail from "./pages/RecipeDetail";
-import CreateRecipe from "./pages/CreateRecipe";
-import EditRecipe from "./pages/EditRecipe";
 import Profile from "./pages/Profile";
+import CreateRecipe from "./pages/CreateRecipe";
+import RecipeDetail from "./pages/RecipeDetail";
+import RecipeList from "./pages/RecipeList";
+
+// Context
+import { AuthProvider } from "./context/AuthContext";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+const theme = extendTheme({
+  fonts: {
+    heading: "Poppins, sans-serif",
+    body: "Inter, sans-serif",
+  },
+  colors: {
+    brand: {
+      50: "#E6FFFA",
+      100: "#B2F5EA",
+      200: "#81E6D9",
+      300: "#4FD1C5",
+      400: "#38B2AC",
+      500: "#319795",
+      600: "#2C7A7B",
+      700: "#285E61",
+      800: "#234E52",
+      900: "#1D4044",
+    },
+  },
+  config: {
+    initialColorMode: "light",
+    useSystemColorMode: false,
+  },
+});
 
 function App() {
   return (
-    <ChakraProvider>
-      <CSSReset />
+    <ChakraProvider theme={theme}>
       <AuthProvider>
         <Router>
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/recipes" element={<RecipeList />} />
-            <Route path="/recipes/:id" element={<RecipeDetail />} />
-            <Route
-              path="/recipes/create"
-              element={
-                <ProtectedRoute>
-                  <CreateRecipe />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/recipes/:id/edit"
-              element={
-                <ProtectedRoute>
-                  <EditRecipe />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
+          <Box minH="100vh" display="flex" flexDirection="column">
+            <Navbar />
+            <Box flex="1">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route
+                  path="/profile"
+                  element={
+                    <ProtectedRoute>
+                      <Profile />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/create-recipe"
+                  element={
+                    <ProtectedRoute>
+                      <CreateRecipe />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/recipes" element={<RecipeList />} />
+                <Route path="/recipe/:id" element={<RecipeDetail />} />
+              </Routes>
+            </Box>
+            <Footer />
+          </Box>
         </Router>
       </AuthProvider>
     </ChakraProvider>

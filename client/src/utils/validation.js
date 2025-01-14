@@ -41,7 +41,7 @@ const validateRecipeForm = (data) => {
   return errors;
 };
 
-export const validate = {
+export const validateForm = {
   email: validateEmail,
   password: validatePassword,
   recipeForm: validateRecipeForm,

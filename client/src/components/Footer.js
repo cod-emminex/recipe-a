@@ -1,0 +1,69 @@
+// client/src/components/Footer.js
+import React from "react";
+import {
+  Box,
+  Container,
+  Stack,
+  Text,
+  Link,
+  Icon,
+  Flex,
+} from "@chakra-ui/react";
+import { FaGithub, FaTwitter, FaInstagram } from "react-icons/fa";
+
+const Footer = () => {
+  const currentDate = new Date().toISOString().split("T")[0];
+
+  return (
+    <Box bg="teal.600" color="white" mt="auto" py={6}>
+      <Container maxW="container.xl">
+        <Stack spacing={8}>
+          <Flex
+            direction={{ base: "column", md: "row" }}
+            justify="space-between"
+            align="center"
+            gap={4}
+          >
+            <Stack spacing={2} align={{ base: "center", md: "flex-start" }}>
+              <Text fontSize="2xl" fontFamily="Poppins" fontWeight="bold">
+                Recipe Haven
+              </Text>
+              <Text fontSize="sm" fontFamily="elephant">
+                Created by {process.env.REACT_APP_USERNAME || "cod-emminex"}
+              </Text>
+            </Stack>
+
+            <Stack direction="row" spacing={6}>
+              <Link href="#" isExternal>
+                <Icon as={FaGithub} w={6} h={6} />
+              </Link>
+              <Link href="#" isExternal>
+                <Icon as={FaTwitter} w={6} h={6} />
+              </Link>
+              <Link href="#" isExternal>
+                <Icon as={FaInstagram} w={6} h={6} />
+              </Link>
+            </Stack>
+          </Flex>
+
+          <Flex
+            direction={{ base: "column", md: "row" }}
+            justify="space-between"
+            align="center"
+            fontSize="sm"
+            borderTop="1px"
+            borderColor="teal.500"
+            pt={4}
+          >
+            <Text>
+              © {new Date().getFullYear()} Recipe Haven. All rights reserved.
+            </Text>
+            <Text>Last updated: {currentDate}</Text>
+          </Flex>
+        </Stack>
+      </Container>
+    </Box>
+  );
+};
+
+export default Footer;

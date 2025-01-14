@@ -1,5 +1,15 @@
 // client/src/components/Navbar.js
-import { Box, Flex, Button, Heading, Stack, useToast } from "@chakra-ui/react";
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Flex,
+  Button,
+  Heading,
+  Stack,
+  useToast,
+  Badge,
+  HStack,
+} from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import NotificationCenter from "./NotificationCenter";
@@ -8,6 +18,35 @@ const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const toast = useToast();
+
+  // State for date/time and username
+  const [currentDateTime, setCurrentDateTime] = useState();
+  const [username, setUsername] = useState("cod-emminex");
+
+  // Update time every second
+  useEffect(() => {
+    const updateDateTime = () => {
+      const now = new Date();
+      const formattedDate = now.toString().slice(0, 29);
+      setCurrentDateTime(formattedDate);
+    };
+
+    // Update immediately
+    updateDateTime();
+
+    // Set up interval
+    const timer = setInterval(updateDateTime, 1000);
+
+    // Cleanup on unmount
+    return () => clearInterval(timer);
+  }, []);
+
+  // Update username when user changes
+  useEffect(() => {
+    if (user) {
+      setUsername(user.username || "cod-emminex"); // Use actual user data from your auth context
+    }
+  }, [user]);
 
   const handleLogout = () => {
     logout();
@@ -28,17 +67,32 @@ const Navbar = () => {
         maxW="1200px"
         mx="auto"
       >
-        <Heading
-          as={RouterLink}
-          to="/"
-          size="lg"
-          color="white"
-          cursor="pointer"
-        >
-          Recipe-A
-        </Heading>
+        <HStack spacing={4}>
+          <Heading
+            as={RouterLink}
+            to="/"
+            size="lg"
+            color="white"
+            cursor="pointer"
+            fontFamily="Poppins"
+          >
+            Recipe Haven
+          </Heading>
+          <Badge
+            colorScheme="white"
+            variant="subtle"
+            px={2}
+            py={1}
+            borderRadius="full"
+            color="white"
+            fontSize="xs"
+            fontFamily="mono"
+          >
+            {currentDateTime} UTC
+          </Badge>
+        </HStack>
 
-        <Stack direction="row" spacing={4}>
+        <Stack direction="row" spacing={4} align="center">
           <Button
             as={RouterLink}
             to="/recipes"
@@ -69,6 +123,15 @@ const Navbar = () => {
               >
                 Profile
               </Button>
+              <Badge
+                colorScheme="white"
+                variant="solid"
+                px={2}
+                py={1}
+                borderRadius="full"
+              >
+                {username}
+              </Badge>
               <Button onClick={handleLogout} colorScheme="teal" variant="solid">
                 Logout
               </Button>
@@ -96,9 +159,9 @@ const Navbar = () => {
           )}
         </Stack>
         {user && (
-          <Stack spacing={4}>
+          <HStack spacing={4}>
             <NotificationCenter />
-          </Stack>
+          </HStack>
         )}
       </Flex>
     </Box>

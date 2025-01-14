@@ -1,6 +1,6 @@
 // client/src/context/AuthContext.js
 import React, { createContext, useState, useContext, useEffect } from "react";
-import jwt_decode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext(null);
 
@@ -12,27 +12,29 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        const decoded = jwt_decode(token);
-        if (decoded.exp * 1000 < Date.now()) {
-          localStorage.removeItem("token");
-          setUser(null);
-        } else {
-          setUser(decoded);
-        }
+        const decoded = jwtDecode(token);
+        setUser({
+          ...decoded,
+          username: decoded.username || "cod-emminex", // Make sure username is included in token
+        });
       } catch (error) {
+        console.error("Error decoding token:", error);
         localStorage.removeItem("token");
-        setUser(null);
       }
     }
-    setLoading(false);
+      setLoading(false);
   }, []);
 
-  const login = (token, userData) => {
+  const login = (token) => {
     localStorage.setItem("token", token);
-    setUser(userData);
+    const decoded = jwtDecode(token);
+    setUser({
+      ...decoded,
+      username: decoded.username || "cod-emminex", // Make sure username is included in token
+    });
   };
 
-  const logout = () => {
+    const logout = () => {
     localStorage.removeItem("token");
     setUser(null);
   };
