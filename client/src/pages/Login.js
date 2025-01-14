@@ -84,7 +84,7 @@ const Login = () => {
   return (
     <Container maxW="container.sm" py={10}>
       <VStack spacing={8}>
-        <Heading>Login to Recipe-A</Heading>
+        <Heading>Login to Recipe Haven</Heading>
 
         <Box as="form" w="100%" onSubmit={handleSubmit}>
           <VStack spacing={4}>
@@ -119,7 +119,7 @@ const Login = () => {
         </Box>
 
         <Text>
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <RouterLink to="/register" style={{ color: "teal" }}>
             Register here
           </RouterLink>
