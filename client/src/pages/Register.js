@@ -12,14 +12,15 @@ import {
 } from "@chakra-ui/react";
 import FormField from "../components/FormField";
 import { useAuth } from "../context/AuthContext";
-import { authAPI } from "../services/api";
 import { validateForm } from "../utils/validation";
+import { authAPI } from "../services/api";
 
 const Register = () => {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
+    confirmPassword: "", // Added to match validation requirements
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -53,11 +54,19 @@ const Register = () => {
 
     setIsLoading(true);
     try {
-      const response = await authAPI.register(formData);
-      login(response.data.token, response.data.user);
+      // First attempt to register
+      await authAPI.register({
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      // If registration successful, login automatically
+      await login(formData.email, formData.password);
 
       toast({
         title: "Registration successful",
+        description: `Welcome to Recipe Haven, ${formData.username}!`,
         status: "success",
         duration: 3000,
         isClosable: true,
@@ -65,6 +74,7 @@ const Register = () => {
 
       navigate("/");
     } catch (error) {
+      console.error("Registration error:", error);
       toast({
         title: "Registration failed",
         description: error.response?.data?.error || "Something went wrong",
@@ -90,6 +100,7 @@ const Register = () => {
               value={formData.username}
               onChange={handleChange}
               error={errors.username}
+              isRequired
             />
 
             <FormField
@@ -99,6 +110,7 @@ const Register = () => {
               value={formData.email}
               onChange={handleChange}
               error={errors.email}
+              isRequired
             />
 
             <FormField
@@ -108,6 +120,17 @@ const Register = () => {
               value={formData.password}
               onChange={handleChange}
               error={errors.password}
+              isRequired
+            />
+
+            <FormField
+              name="confirmPassword"
+              label="Confirm Password"
+              type="password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              error={errors.confirmPassword}
+              isRequired
             />
 
             <Button
@@ -116,6 +139,7 @@ const Register = () => {
               size="lg"
               w="100%"
               isLoading={isLoading}
+              loadingText="Creating account..."
             >
               Register
             </Button>

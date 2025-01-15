@@ -23,6 +23,42 @@ const userSchema = new mongoose.Schema(
       required: [true, "Password is required"],
       minlength: [6, "Password must be at least 6 characters"],
     },
+    name: {
+      type: String,
+      trim: true,
+    },
+    bio: {
+      type: String,
+      trim: true,
+      maxLength: 500, // Reasonable limit for bio
+    },
+    country: {
+      code: String,
+      name: String,
+      flag: String,
+    },
+    bestRecipe: {
+      type: String,
+      trim: true,
+      maxLength: 100,
+    },
+    favoriteCuisine: {
+      type: String,
+      trim: true,
+      maxLength: 100,
+    },
+    avatarUrl: {
+      type: String,
+      trim: true,
+    },
+    followersCount: {
+      type: Number,
+      default: 0,
+    },
+    followingCount: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
@@ -32,8 +68,12 @@ const userSchema = new mongoose.Schema(
 // Hash password before saving
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
+  try {
+    this.password = await bcrypt.hash(this.password, 10);
+    next();
+  } catch (err) {
+    next(err);
+  }
 });
 
 // Method to compare password

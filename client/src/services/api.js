@@ -37,6 +37,10 @@ export const recipeAPI = {
 export const userAPI = {
   getProfile: () => api.get("/users/me"),
   updateProfile: (userData) => api.put("/users/me", userData),
+  getPublicProfile: (username) => api.get(`/users/${username}`),
+  // Add these if you want to implement following functionality
+  follow: (username) => api.post(`/users/${username}/follow`),
+  unfollow: (username) => api.delete(`/users/${username}/follow`),
 };
 
 export default api;

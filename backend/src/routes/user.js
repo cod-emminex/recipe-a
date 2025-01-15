@@ -1,11 +1,14 @@
-// src/routes/user.js
+// backend/src/routes/user.js
 const express = require("express");
-const { protect } = require("../middleware/auth");
-const { getUser, updateUser } = require("../controllers/user");
-
 const router = express.Router();
+const userController = require("../controllers/user");
+const { protect } = require("../middleware/auth");
 
-// Update these routes to use the correct controller functions
-router.get("/me", protect, getUser);
-router.put("/me", protect, updateUser);
+// Private routes (require authentication)
+router.get("/me", protect, userController.getUser);
+router.put("/me", protect, userController.updateUser);
+
+// Public route for viewing profiles
+router.get("/:username", userController.getUserByUsername);
+
 module.exports = router;

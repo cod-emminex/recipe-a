@@ -1,85 +1,49 @@
-// client/src/components/ProfileForm.js
-import { useState } from "react";
-import { VStack, Button, useToast } from "@chakra-ui/react";
-import FormField from "./FormField";
-import { userAPI } from "../services/api";
-import { useAuth } from "../context/AuthContext";
+// src/pages/ProfileForm.js
+import React from "react";
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  VStack,
+} from "@chakra-ui/react";
 
-const ProfileForm = () => {
-  const { user } = useAuth();
-  const [formData, setFormData] = useState({
-    username: user.username || "",
-    email: user.email || "",
-  });
-  const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-  const toast = useToast();
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
-  };
-
-  const handleSubmit = async (e) => {
+const ProfileForm = ({ onSubmit, initialValues = {} }) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      await userAPI.updateProfile(formData);
-      toast({
-        title: "Profile updated successfully",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-    } catch (error) {
-      toast({
-        title: "Error updating profile",
-        description: error.response?.data?.error || "Something went wrong",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData);
+    onSubmit(data);
   };
 
   return (
-    <VStack as="form" onSubmit={handleSubmit} spacing={6} align="stretch">
-      <FormField
-        name="username"
-        label="Username"
-        value={formData.username}
-        onChange={handleChange}
-        error={errors.username}
-      />
+    <Box as="form" onSubmit={handleSubmit}>
+      <VStack spacing={4}>
+        <FormControl>
+          <FormLabel>Name</FormLabel>
+          <Input
+            name="name"
+            defaultValue={initialValues.name}
+            placeholder="Your name"
+          />
+        </FormControl>
 
-      <FormField
-        name="email"
-        label="Email"
-        type="email"
-        value={formData.email}
-        onChange={handleChange}
-        error={errors.email}
-      />
+        <FormControl>
+          <FormLabel>Email</FormLabel>
+          <Input
+            name="email"
+            type="email"
+            defaultValue={initialValues.email}
+            placeholder="your.email@example.com"
+          />
+        </FormControl>
 
-      <Button
-        type="submit"
-        colorScheme="teal"
-        size="lg"
-        isLoading={isLoading}
-        loadingText="Updating..."
-      >
-        Update Profile
-      </Button>
-    </VStack>
+        <Button type="submit" colorScheme="blue" width="full">
+          Save Changes
+        </Button>
+      </VStack>
+    </Box>
   );
 };
 

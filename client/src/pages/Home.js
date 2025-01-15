@@ -21,7 +21,6 @@ import RecipeCarousel from "../components/RecipeCarousel";
 const Home = () => {
   const { user } = useAuth();
   const bgColor = useColorModeValue("gray.50", "gray.900");
-  const username = user ? user.displayName : "Guest";
 
   const featuredRecipes = [
     {
@@ -101,11 +100,7 @@ const Home = () => {
             >
               Welcome to Recipe Haven
             </Heading>
-            {user && (
-              <Text fontSize="lg" color="teal.600">
-                Welcome back, {username || "cod-emminex"}!
-              </Text>
-            )}
+            {user && <Text fontSize="lg" color="teal.600"></Text>}
           </Box>
 
           <Text fontSize="xl" maxW="container.md" fontFamily="Inter">

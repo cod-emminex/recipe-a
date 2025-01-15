@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }) => {
       setUser({
         ...decoded,
         ...userData,
-        username: decoded.username || "cod-emminex",
+        username: userData.username || decoded.username || "cod-emminex",
       });
 
       return response.data;
@@ -85,7 +85,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // New method to update user data
   const updateUser = (userData) => {
     setUser((prevUser) => ({
       ...prevUser,
