@@ -1,70 +1,28 @@
-// client/src/context/NotificationContext.js
-import { createContext, useContext, useState, useEffect } from "react";
-import { useAuth } from "./AuthContext";
-import { userAPI } from "../services/api";
+// src/context/NotificationContext.js
+import React, { createContext, useContext, useState } from "react";
 
-const NotificationContext = createContext();
+const NotificationContext = createContext(null);
 
 export const NotificationProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const { user } = useAuth();
 
-  useEffect(() => {
-    if (user) {
-      fetchNotifications();
-      initializeWebSocket();
-    }
-  }, [user]);
-
-  const fetchNotifications = async () => {
-    try {
-      const response = await userAPI.getNotifications();
-      setNotifications(response.data);
-      updateUnreadCount(response.data);
-    } catch (error) {
-      console.error("Error fetching notifications:", error);
-    }
+  const addNotification = (notification) => {
+    const id = Math.random().toString(36).substring(7);
+    setNotifications((prev) => [...prev, { ...notification, id }]);
   };
 
-  const updateUnreadCount = (notifs) => {
-    const unread = notifs.filter((n) => !n.read).length;
-    setUnreadCount(unread);
-  };
-
-  const markAsRead = async (notificationId) => {
-    try {
-      await userAPI.markNotificationAsRead(notificationId);
-      setNotifications(
-        notifications.map((n) =>
-          n._id === notificationId ? { ...n, read: true } : n
-        )
-      );
-      setUnreadCount((prev) => Math.max(0, prev - 1));
-    } catch (error) {
-      console.error("Error marking notification as read:", error);
-    }
-  };
-
-  const initializeWebSocket = () => {
-    const ws = new WebSocket(process.env.REACT_APP_WS_URL);
-
-    ws.onmessage = (event) => {
-      const notification = JSON.parse(event.data);
-      setNotifications((prev) => [notification, ...prev]);
-      setUnreadCount((prev) => prev + 1);
-    };
-
-    return () => ws.close();
+  const removeNotification = (id) => {
+    setNotifications((prev) =>
+      prev.filter((notification) => notification.id !== id)
+    );
   };
 
   return (
     <NotificationContext.Provider
       value={{
         notifications,
-        unreadCount,
-        markAsRead,
-        fetchNotifications,
+        addNotification,
+        removeNotification,
       }}
     >
       {children}
@@ -72,4 +30,12 @@ export const NotificationProvider = ({ children }) => {
   );
 };
 
-export const useNotifications = () => useContext(NotificationContext);
+export const useNotifications = () => {
+  const context = useContext(NotificationContext);
+  if (!context) {
+    throw new Error(
+      "useNotifications must be used within a NotificationProvider"
+    );
+  }
+  return context;
+};

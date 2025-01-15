@@ -2,7 +2,8 @@
 import React from "react";
 import { ChakraProvider } from "@chakra-ui/react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
+import { NotificationProvider } from "./context/NotificationContext";
+import NotificationCenter from "./components/NotificationCenter";
 // Components
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -50,39 +51,42 @@ const theme = extendTheme({
 function App() {
   return (
     <ChakraProvider theme={theme}>
-      <AuthProvider>
-        <Router>
-          <Box minH="100vh" display="flex" flexDirection="column">
-            <Navbar />
-            <Box flex="1">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route
-                  path="/profile"
-                  element={
-                    <ProtectedRoute>
-                      <Profile />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/create-recipe"
-                  element={
-                    <ProtectedRoute>
-                      <CreateRecipe />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route path="/recipes" element={<RecipeList />} />
-                <Route path="/recipe/:id" element={<RecipeDetail />} />
-              </Routes>
+      <NotificationProvider>
+        <AuthProvider>
+          <Router>
+            <Box minH="100vh" display="flex" flexDirection="column">
+              <Navbar />
+              <NotificationCenter />
+              <Box flex="1">
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route
+                    path="/profile"
+                    element={
+                      <ProtectedRoute>
+                        <Profile />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/create-recipe"
+                    element={
+                      <ProtectedRoute>
+                        <CreateRecipe />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route path="/recipes" element={<RecipeList />} />
+                  <Route path="/recipe/:id" element={<RecipeDetail />} />
+                </Routes>
+              </Box>
+              <Footer />
             </Box>
-            <Footer />
-          </Box>
-        </Router>
-      </AuthProvider>
+          </Router>
+        </AuthProvider>
+      </NotificationProvider>
     </ChakraProvider>
   );
 }

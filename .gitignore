@@ -24,3 +24,5 @@ client/node_modules/
 *.swp
 *.swo
 .gitignore
+.env.local
+.env.*.local

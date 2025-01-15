@@ -12,7 +12,6 @@ import {
 } from "@chakra-ui/react";
 import FormField from "../components/FormField";
 import { useAuth } from "../context/AuthContext";
-import { authAPI } from "../services/api";
 import { validateForm } from "../utils/validation";
 
 const Login = () => {
@@ -55,11 +54,12 @@ const Login = () => {
 
     setIsLoading(true);
     try {
-      const response = await authAPI.login(formData);
-      login(response.data.token, response.data.user);
+      // Use the login function from AuthContext directly
+      await login(formData.email, formData.password);
 
       toast({
         title: "Login successful",
+        description: "Welcome back!",
         status: "success",
         duration: 3000,
         isClosable: true,
@@ -71,7 +71,7 @@ const Login = () => {
     } catch (error) {
       toast({
         title: "Login failed",
-        description: error.response?.data?.error || "Something went wrong",
+        description: error.message || "Something went wrong",
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -95,6 +95,7 @@ const Login = () => {
               value={formData.email}
               onChange={handleChange}
               error={errors.email}
+              isRequired
             />
 
             <FormField
@@ -104,6 +105,7 @@ const Login = () => {
               value={formData.password}
               onChange={handleChange}
               error={errors.password}
+              isRequired
             />
 
             <Button
@@ -112,6 +114,7 @@ const Login = () => {
               size="lg"
               w="100%"
               isLoading={isLoading}
+              loadingText="Logging in..."
             >
               Login
             </Button>
