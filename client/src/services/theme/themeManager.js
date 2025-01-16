@@ -1,6 +1,5 @@
 // client/src/services/theme/themeManager.js
 import { storage } from "../../utils/storage";
-import { eventBus } from "../eventBus";
 
 class ThemeManager {
   constructor() {
@@ -9,6 +8,34 @@ class ThemeManager {
     this.variables = new Map();
     this.mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     this.initialize();
+  }
+  on(eventName, callback) {
+    if (!this.listeners) {
+      this.listeners = new Map();
+    }
+
+    if (!this.listeners.has(eventName)) {
+      this.listeners.set(eventName, new Set());
+    }
+
+    this.listeners.get(eventName).add(callback);
+
+    // Return unsubscribe function
+    return () => {
+      this.listeners.get(eventName).delete(callback);
+    };
+  }
+
+  emit(eventName, data) {
+    if (!this.listeners?.has(eventName)) return;
+
+    this.listeners.get(eventName).forEach((callback) => {
+      try {
+        callback(data);
+      } catch (error) {
+        console.error("Error in event listener:", error);
+      }
+    });
   }
 
   initialize() {
@@ -26,7 +53,7 @@ class ThemeManager {
         info: "#3182CE",
       },
       typography: {
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "'Montserrat', sans-serif",
         fontSize: {
           base: "16px",
           small: "14px",
@@ -35,6 +62,7 @@ class ThemeManager {
         fontWeight: {
           normal: "400",
           medium: "500",
+          semibold: "600",
           bold: "700",
         },
       },
@@ -100,7 +128,7 @@ class ThemeManager {
     this.compileThemeVariables(name, theme);
   }
 
-  compileThemeVariables(themeName, theme, prefix = "") {
+  compileThemeVariables(themeName, theme = "") {
     const flatten = (obj, parentKey = "") => {
       Object.entries(obj).forEach(([key, value]) => {
         const fullKey = parentKey ? `${parentKey}-${key}` : key;
@@ -141,10 +169,7 @@ class ThemeManager {
     storage.set("theme", themeName);
 
     // Emit theme change event
-    eventBus.emit("theme:change", {
-      oldTheme,
-      newTheme: themeName,
-    });
+    this.emit("theme:change", { oldTheme, newTheme: themeName });
   }
 
   getTheme(themeName) {

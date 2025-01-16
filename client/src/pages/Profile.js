@@ -27,6 +27,7 @@ import RecipeCard from "../components/RecipeCard";
 import LoadingSpinner from "../components/LoadingSpinner";
 import EditableField from "../components/EditableField";
 import { Divider } from "@chakra-ui/react";
+import PageTitle from "../components/PageTitle";
 
 const Profile = () => {
   const [userRecipes, setUserRecipes] = useState([]);
@@ -123,6 +124,7 @@ const Profile = () => {
 
   return (
     <Container maxW="container.xl" py={8}>
+      <PageTitle title="Profile" />
       <VStack spacing={8} align="stretch">
         {/* Profile Header */}
         <Grid templateColumns={{ base: "1fr", md: "200px 1fr" }} gap={8}>
@@ -132,6 +134,19 @@ const Profile = () => {
               src={profileData?.avatarUrl}
               name={profileData?.name || user.username}
             />
+            <VStack spacing={1}>
+              <Text
+                fontSize="sm"
+                color="gray.600"
+                textAlign="center"
+                wordBreak="break-all"
+              >
+                {profileData?.email || user.email}
+              </Text>
+              <Text fontSize="sm" color="gray.500" fontWeight="medium">
+                @{profileData?.username || user.username}
+              </Text>
+            </VStack>
           </VStack>
 
           <Box>
@@ -192,6 +207,15 @@ const Profile = () => {
                   placeholder="Tell us about yourself"
                 />
                 <Divider />
+                <EditableField
+                  label="E-mail"
+                  name="email"
+                  value={profileData?.email}
+                  onSave={handleProfileUpdate}
+                  placeholder="Your user email"
+                />
+                <Divider />
+
                 <EditableField
                   label="Country"
                   name="country"

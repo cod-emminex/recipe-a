@@ -1,12 +1,11 @@
 // client/src/components/RecipeCard.js
 import { Box, Heading, Text, Button, Stack, useToast } from "@chakra-ui/react";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { recipeAPI } from "../services/api";
 
 const RecipeCard = ({ recipe, onDelete }) => {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const toast = useToast();
 
   const handleDelete = async () => {

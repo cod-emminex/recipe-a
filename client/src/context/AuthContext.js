@@ -75,8 +75,6 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       setLoading(true);
-      // Optional: Call logout endpoint if it exists
-      await authAPI.logout().catch(console.error);
     } finally {
       localStorage.removeItem("token");
       setUser(null);

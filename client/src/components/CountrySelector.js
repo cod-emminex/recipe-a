@@ -1,5 +1,5 @@
 // src/components/CountrySelector.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
   Input,
@@ -16,24 +16,30 @@ const CountrySelector = ({ value, onChange, isEditing }) => {
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState(null);
+  const inputRef = useRef(null);
 
-  // Find and set the selected country when value changes
+  // Find and set the selected country when value changes or on mount
   useEffect(() => {
     if (value) {
-      const country = countries.find((c) => c.code === value);
+      const country =
+        typeof value === "string"
+          ? countries.find((c) => c.code === value)
+          : countries.find((c) => c.code === value.code);
       setSelectedCountry(country);
     }
   }, [value]);
 
-  const filteredCountries = countries.filter((country) =>
-    country.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredCountries = search
+    ? countries.filter((country) =>
+        country.name.toLowerCase().includes(search.toLowerCase())
+      )
+    : countries;
 
   const handleSelect = (country) => {
     setSelectedCountry(country);
+    setSearch(country.name); // Update the input field with selected country name
     onChange(country);
     setIsOpen(false);
-    setSearch("");
   };
 
   if (!isEditing) {
@@ -46,15 +52,22 @@ const CountrySelector = ({ value, onChange, isEditing }) => {
   }
 
   return (
-    <Box position="relative">
+    <Box position="relative" width="100%">
       <Input
-        value={search}
+        ref={inputRef}
+        value={
+          selectedCountry
+            ? `${selectedCountry.flag} ${selectedCountry.name}`
+            : search
+        }
         onChange={(e) => {
           setSearch(e.target.value);
+          setSelectedCountry(null); // Clear selection when user types
           setIsOpen(true);
         }}
         placeholder="Search country..."
         onFocus={() => setIsOpen(true)}
+        onClick={() => setIsOpen(true)}
       />
       {isOpen && (
         <Portal>
@@ -66,17 +79,32 @@ const CountrySelector = ({ value, onChange, isEditing }) => {
             borderRadius="md"
             maxH="200px"
             overflowY="auto"
-            w="300px"
+            w={inputRef.current ? inputRef.current.offsetWidth : "300px"}
+            left={
+              inputRef.current
+                ? inputRef.current.getBoundingClientRect().left
+                : 0
+            }
+            top={
+              inputRef.current
+                ? inputRef.current.getBoundingClientRect().bottom
+                : 0
+            }
             boxShadow="lg"
           >
             <VStack align="stretch" spacing={0}>
               {filteredCountries.map((country) => (
                 <ListItem
-                  key={`${country.code}-${country.name}`} // Updated unique key
+                  key={country.code}
                   p={2}
                   cursor="pointer"
                   _hover={{ bg: "gray.100" }}
                   onClick={() => handleSelect(country)}
+                  bg={
+                    selectedCountry?.code === country.code
+                      ? "gray.100"
+                      : "transparent"
+                  }
                 >
                   <HStack>
                     <Text>{country.flag}</Text>

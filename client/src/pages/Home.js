@@ -12,12 +12,12 @@ import {
   Image,
   useColorModeValue,
   Stack,
-  Badge,
 } from "@chakra-ui/react";
 import { useAuth } from "../context/AuthContext";
 import SearchBar from "../components/SearchBar";
 import RecipeCarousel from "../components/RecipeCarousel";
-
+import PageTitle from "../components/PageTitle";
+import WelcomeMessage from "../components/WelcomeMessage";
 const Home = () => {
   const { user } = useAuth();
   const bgColor = useColorModeValue("gray.50", "gray.900");
@@ -86,24 +86,26 @@ const Home = () => {
   return (
     <Box bg={bgColor}>
       <Container maxW="container.xl" py={10}>
+        <PageTitle title="Home" />
         <VStack spacing={10} align="center" textAlign="center">
           {/* Welcome Section */}
           <Box>
-            <Badge colorScheme="teal" p={2} borderRadius="full" mb={4}></Badge>
-            <Heading
-              as="h1"
-              size="2xl"
-              bgGradient="linear(to-r, teal.400, teal.600)"
-              bgClip="text"
-              fontFamily="geogrotesque"
-              mb={4}
-            >
-              Welcome to Recipe Haven
-            </Heading>
-            {user && <Text fontSize="lg" color="teal.600"></Text>}
+            <WelcomeMessage fontSize="xxxl" fontFamily="elephant" />
+            {user && (
+              <Text
+                fontSize="xxxl"
+                color="teal.600"
+                fontFamily="georgia"
+              ></Text>
+            )}
           </Box>
-
-          <Text fontSize="xl" maxW="container.md" fontFamily="Inter">
+          <Text
+            fontSize={{ base: "xxl", md: "2xl" }}
+            maxW="container.md"
+            fontFamily="Montserrat"
+            fontStyle="oblique"
+            fontWeight={"bold"}
+          >
             Your journey to culinary excellence starts here. Share, discover,
             and create amazing dishes.
           </Text>
@@ -118,7 +120,7 @@ const Home = () => {
                 size="lg"
                 colorScheme="teal"
                 px={8}
-                fontFamily="Poppins"
+                fontFamily="Montserrat"
               >
                 Get Started
               </Button>
@@ -129,7 +131,7 @@ const Home = () => {
                 colorScheme="teal"
                 variant="outline"
                 px={8}
-                fontFamily="Poppins"
+                fontFamily="Montserrat"
               >
                 Sign In
               </Button>
@@ -138,7 +140,9 @@ const Home = () => {
 
           {/* Featured Recipes Carousel */}
           <Box w="full" py={8}>
-            <RecipeCarousel recipes={featuredRecipes} />
+            <Text fontFamily={"Montserrat"}>
+              <RecipeCarousel recipes={featuredRecipes} />
+            </Text>
           </Box>
 
           {/* Features Grid */}
@@ -181,10 +185,10 @@ const Home = () => {
                     </Box>
                   }
                 />
-                <Heading size="md" fontFamily="Poppins" color="teal.600">
+                <Heading size="md" fontFamily="Montserrat" color="teal.600">
                   {feature.title}
                 </Heading>
-                <Text fontFamily="Inter" color="gray.600">
+                <Text fontFamily="Montserrat" color="gray.600">
                   {feature.description}
                 </Text>
               </VStack>
@@ -194,10 +198,10 @@ const Home = () => {
           {/* Call to Action */}
           <Box py={16}>
             <VStack spacing={6}>
-              <Heading size="lg" color="teal.600" fontFamily="Poppins">
+              <Heading size="lg" color="teal.600" fontFamily="Montserrat">
                 Start Your Culinary Journey Today
               </Heading>
-              <Text fontSize="lg" fontFamily="Inter" maxW="container.md">
+              <Text fontSize="lg" fontFamily="Montserrat" maxW="container.md">
                 Join our growing community of food lovers and share your unique
                 recipes with the world.
               </Text>
@@ -210,7 +214,7 @@ const Home = () => {
                   px={12}
                   py={6}
                   fontSize="lg"
-                  fontFamily="Poppins"
+                  fontFamily="Montserrat"
                 >
                   Join Recipe Haven
                 </Button>

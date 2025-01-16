@@ -10,19 +10,18 @@ const EditableField = ({
   onSave,
   name,
   placeholder = "Not set",
-  type = "text", // Add type prop
+  type = "text",
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedValue, setEditedValue] = useState(value);
 
-  // Update editedValue when value prop changes
   useEffect(() => {
     setEditedValue(value);
   }, [value]);
 
   const handleSave = async () => {
     try {
-      if (type === "country") {
+      if (type === "country" && editedValue) {
         // For country selection, pass the complete country object
         await onSave({
           [name]: {
@@ -49,8 +48,8 @@ const EditableField = ({
     if (type === "country") {
       return (
         <CountrySelector
-          value={editedValue}
-          onChange={(country) => setEditedValue(country.code)}
+          value={editedValue?.code || editedValue}
+          onChange={(country) => setEditedValue(country)}
           isEditing={isEditing}
         />
       );
@@ -80,7 +79,11 @@ const EditableField = ({
         {isEditing ? (
           renderEditComponent()
         ) : type === "country" ? (
-          <CountrySelector value={value} isEditing={false} />
+          <CountrySelector
+            value={value?.code || value}
+            isEditing={false}
+            onChange={() => {}} // Add empty onChange for non-editing mode
+          />
         ) : (
           <Text>{value || placeholder}</Text>
         )}

@@ -1,15 +1,6 @@
 // client/src/components/RecipeForm.js
 import { useState } from "react";
-import {
-  Box,
-  VStack,
-  HStack,
-  Button,
-  IconButton,
-  Text,
-  useToast,
-} from "@chakra-ui/react";
-import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
+import { Box, VStack, HStack, Button, useToast } from "@chakra-ui/react";
 import FormField from "./FormField";
 import ImageUpload from "./ImageUpload";
 import { validateForm } from "../utils/validation";
@@ -96,7 +87,66 @@ const RecipeForm = ({ initialData = {}, onSubmit, isLoading }) => {
 
     onSubmit(cleanedData);
   };
+  const renderIngredients = () => (
+    <VStack align="stretch" spacing={2}>
+      <Text fontWeight="bold">Ingredients</Text>
+      {formData.ingredients.map((ingredient, index) => (
+        <HStack key={index}>
+          <FormField
+            value={ingredient}
+            onChange={(e) =>
+              handleArrayChange(index, "ingredients", e.target.value)
+            }
+            placeholder="Add ingredient"
+          />
+          <Button
+            size="sm"
+            colorScheme="red"
+            onClick={() => handleRemoveItem(index, "ingredients")}
+          >
+            Remove
+          </Button>
+        </HStack>
+      ))}
+      <Button
+        size="sm"
+        leftIcon={<AddIcon />}
+        onClick={() => handleAddItem("ingredients")}
+      >
+        Add Ingredient
+      </Button>
+    </VStack>
+  );
 
+  const renderSteps = () => (
+    <VStack align="stretch" spacing={2}>
+      <Text fontWeight="bold">Steps</Text>
+      {formData.steps.map((step, index) => (
+        <HStack key={index}>
+          <FormField
+            value={step}
+            onChange={(e) => handleArrayChange(index, "steps", e.target.value)}
+            placeholder={`Step ${index + 1}`}
+            isTextarea
+          />
+          <Button
+            size="sm"
+            colorScheme="red"
+            onClick={() => handleRemoveItem(index, "steps")}
+          >
+            Remove
+          </Button>
+        </HStack>
+      ))}
+      <Button
+        size="sm"
+        leftIcon={<AddIcon />}
+        onClick={() => handleAddItem("steps")}
+      >
+        Add Step
+      </Button>
+    </VStack>
+  );
   return (
     <Box as="form" onSubmit={handleSubmit} width="100%">
       <VStack spacing={6} align="stretch">

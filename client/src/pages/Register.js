@@ -14,6 +14,7 @@ import FormField from "../components/FormField";
 import { useAuth } from "../context/AuthContext";
 import { validateForm } from "../utils/validation";
 import { authAPI } from "../services/api";
+import PageTitle from "../components/PageTitle";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -89,6 +90,7 @@ const Register = () => {
 
   return (
     <Container maxW="container.sm" py={10}>
+      <PageTitle title="Register" />
       <VStack spacing={8}>
         <Heading>Create an Account</Heading>
 

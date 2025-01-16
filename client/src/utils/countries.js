@@ -49,8 +49,6 @@ const countries = [
   { name: "Hungary", code: "HU", flag: "🇭🇺" },
   { name: "Iceland", code: "IS", flag: "🇮🇸" },
   { name: "India", code: "IN", flag: "🇮🇳" },
-  { name: "Iceland", code: "IS", flag: "🇮🇸" },
-  { name: "India", code: "IN", flag: "🇮🇳" },
   { name: "Indonesia", code: "ID", flag: "🇮🇩" },
   { name: "Iran", code: "IR", flag: "🇮🇷" },
   { name: "Iraq", code: "IQ", flag: "🇮🇶" },
