@@ -6,7 +6,7 @@ import { NotificationProvider } from "./context/NotificationContext";
 import { HelmetProvider } from "react-helmet-async";
 import { themeManager } from "./services/theme/themeManager";
 import { eventBus } from "./services/eventBus";
-import { ThemeStyles } from "./components/ThemeStyles";
+import ThemeStyles from "./components/ThemeStyles";
 // Components
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";

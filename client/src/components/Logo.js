@@ -9,11 +9,9 @@ const Logo = () => {
       <Image
         src={LogoImage}
         alt="Recipe Haven Logo"
-        h="60px"
+        h="70px"
         w="auto"
         objectFit="contain"
-        as={RouterLink}
-        to="/"
       />
       <Heading
         as={RouterLink}

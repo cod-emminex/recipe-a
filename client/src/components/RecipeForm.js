@@ -1,10 +1,11 @@
 // client/src/components/RecipeForm.js
 import { useState } from "react";
-import { Box, VStack, HStack, Button, useToast } from "@chakra-ui/react";
+import { Box, VStack, HStack, Button, useToast, Text } from "@chakra-ui/react";
 import FormField from "./FormField";
 import ImageUpload from "./ImageUpload";
 import { validateForm } from "../utils/validation";
 import CategorySelect from "./CategorySelect";
+import { AddIcon } from "@chakra-ui/icons";
 
 const RecipeForm = ({ initialData = {}, onSubmit, isLoading }) => {
   const [formData, setFormData] = useState({
@@ -206,6 +207,8 @@ const RecipeForm = ({ initialData = {}, onSubmit, isLoading }) => {
 
         {/* Rest of the form components remain the same */}
         {/* ... ingredients and steps sections ... */}
+        {renderIngredients()}
+        {renderSteps()}
 
         <Button
           type="submit"

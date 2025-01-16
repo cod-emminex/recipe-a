@@ -32,7 +32,7 @@ const WelcomeMessage = () => {
               >
                 {user.username}
               </Box>
-              ,
+              ❗
             </>
           ) : (
             ""

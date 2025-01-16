@@ -19,7 +19,6 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import NotificationCenter from "./NotificationCenter";
 import Logo from "./Logo";
-import ThemeToggle from "./ThemeToggle";
 
 // Import icons
 import {
@@ -181,7 +180,6 @@ const Navbar = () => {
             <HStack spacing={2}>
               <FaClock />
               <Text>{currentDateTime}</Text>
-              <ThemeToggle />
             </HStack>
           </Badge>
         </HStack>
