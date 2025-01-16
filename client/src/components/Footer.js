@@ -9,7 +9,7 @@ import {
   Icon,
   Flex,
 } from "@chakra-ui/react";
-import { FaGithub, FaTwitter, FaInstagram } from "react-icons/fa";
+import { FaGithub, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
 
 const Footer = () => {
   const currentDate = new Date().toISOString().split("T")[0];
@@ -25,15 +25,21 @@ const Footer = () => {
             gap={4}
           >
             <Stack spacing={2} align={{ base: "center", md: "flex-start" }}>
-              <Text fontSize="2xl" fontFamily="Poppins" fontWeight="bold">
+              <Text fontSize="3xl" fontFamily="Montserrat" fontWeight="bold">
                 Recipe Haven
               </Text>
-              <Text fontSize="sm" fontFamily="elephant">
+              <Text fontSize="m" fontFamily="Montserrat">
                 Created by {process.env.REACT_APP_USERNAME || "cod-emminex"}
               </Text>
             </Stack>
 
             <Stack direction="row" spacing={6}>
+              <Text fontSize="l" fontFamily="Montserrat">
+                Follow on Social Media:
+              </Text>
+              <Link href="#" isExternal>
+                <Icon as={FaLinkedin} w={6} h={6} />
+              </Link>
               <Link href="#" isExternal>
                 <Icon as={FaGithub} w={6} h={6} />
               </Link>
@@ -53,6 +59,7 @@ const Footer = () => {
             fontSize="sm"
             borderTop="1px"
             borderColor="teal.500"
+            fontFamily={"Montserrat"}
             pt={4}
           >
             <Text>

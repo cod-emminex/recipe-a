@@ -149,7 +149,12 @@ const RecipeForm = ({ initialData = {}, onSubmit, isLoading }) => {
     </VStack>
   );
   return (
-    <Box as="form" onSubmit={handleSubmit} width="100%">
+    <Box
+      as="form"
+      onSubmit={handleSubmit}
+      width="100%"
+      fontFamily={"Montserrat"}
+    >
       <VStack spacing={6} align="stretch">
         <ImageUpload
           initialImage={formData.image}
@@ -193,15 +198,6 @@ const RecipeForm = ({ initialData = {}, onSubmit, isLoading }) => {
             value={formData.cookingTime}
             onChange={handleChange}
             error={errors.cookingTime}
-          />
-
-          <FormField
-            name="servings"
-            label="Servings"
-            type="number"
-            value={formData.servings}
-            onChange={handleChange}
-            error={errors.servings}
           />
         </HStack>
 

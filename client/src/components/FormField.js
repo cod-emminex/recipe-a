@@ -27,6 +27,7 @@ const FormField = ({
         name={name}
         type={type}
         value={value}
+        fontfamily="Montserrat"
         onChange={onChange}
         {...props}
       />

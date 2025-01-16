@@ -97,7 +97,7 @@ const Navbar = () => {
         <>
           <Button
             as={RouterLink}
-            to="/recipes/create"
+            to="/create-recipe"
             colorScheme="teal"
             variant="ghost"
             color="white"
@@ -187,8 +187,8 @@ const Navbar = () => {
         {/* Desktop Navigation */}
         <Stack
           direction="row"
-          spacing={4}
-          align="center"
+          spacing={7}
+          align="right"
           display={{ base: "none", md: "flex" }}
         >
           <NavLinks />

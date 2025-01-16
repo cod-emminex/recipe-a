@@ -9,7 +9,12 @@ import {
   Select,
   HStack,
   useToast,
+  Text,
+  VStack,
+  Button,
 } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
+import { AddIcon } from "@chakra-ui/icons";
 import RecipeCard from "../components/RecipeCard";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { recipeAPI } from "../services/api";
@@ -28,7 +33,12 @@ const RecipeList = () => {
   const fetchRecipes = async () => {
     try {
       const response = await recipeAPI.getAll();
-      setRecipes(response.data);
+      // Add number property to each recipe
+      const numberedRecipes = response.data.map((recipe, index) => ({
+        ...recipe,
+        recipeNumber: index + 1,
+      }));
+      setRecipes(numberedRecipes);
     } catch (error) {
       toast({
         title: "Error fetching recipes",
@@ -65,36 +75,87 @@ const RecipeList = () => {
 
   return (
     <Container maxW="container.xl" py={8}>
-      <Heading mb={8}>All Recipes</Heading>
+      <VStack spacing={6} align="stretch">
+        <HStack
+          justify="space-between"
+          align="center"
+          fontFamily={"Montserrat"}
+        >
+          <Heading fontFamily={"Montserrat"}>
+            All Recipes ({recipes.length})
+          </Heading>
+          <Button
+            as={RouterLink}
+            to="/create-recipe"
+            colorScheme="teal"
+            leftIcon={<AddIcon />}
+            fontFamily={"Montserrat"}
+          >
+            Add New Recipe
+          </Button>
+        </HStack>
 
-      <HStack mb={8} spacing={4}>
-        <Input
-          placeholder="Search recipes..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <Select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-          <option value="newest">Newest First</option>
-          <option value="oldest">Oldest First</option>
-          <option value="title">By Title</option>
-        </Select>
-      </HStack>
-
-      <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
-        {filteredAndSortedRecipes.map((recipe) => (
-          <RecipeCard
-            key={recipe._id}
-            recipe={recipe}
-            onDelete={handleDelete}
+        <HStack mb={8} spacing={4}>
+          <Input
+            placeholder="Search recipes..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
-        ))}
-      </SimpleGrid>
+          <Select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="title">By Title</option>
+          </Select>
+        </HStack>
 
-      {filteredAndSortedRecipes.length === 0 && (
-        <Box textAlign="center" py={10}>
-          No recipes found.
-        </Box>
-      )}
+        <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
+          {filteredAndSortedRecipes.map((recipe) => (
+            <Box
+              key={recipe._id}
+              position="relative"
+              transition="transform 0.2s"
+              _hover={{ transform: "translateY(-4px)" }}
+            >
+              {/* Recipe Number Badge */}
+              <Box
+                position="absolute"
+                top="-10px"
+                left="-10px"
+                bg="teal.500"
+                color="white"
+                borderRadius="full"
+                w="30px"
+                h="30px"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                fontWeight="bold"
+                zIndex="1"
+                boxShadow="md"
+              >
+                {recipe.recipeNumber}
+              </Box>
+              <RecipeCard recipe={recipe} onDelete={handleDelete} />
+            </Box>
+          ))}
+        </SimpleGrid>
+
+        {filteredAndSortedRecipes.length === 0 && (
+          <Box
+            textAlign="center"
+            py={10}
+            borderRadius="lg"
+            bg="gray.50"
+            color="gray.600"
+          >
+            <Text fontSize="lg" fontFamily={"Montserrat"} fontWeight={"bold"}>
+              {searchTerm
+                ? "No recipes found matching your search."
+                : "No recipes available. Add your first recipe!"}
+            </Text>
+          </Box>
+        )}
+      </VStack>
     </Container>
   );
 };

@@ -35,13 +35,14 @@ const RecipeCard = ({ recipe, onDelete }) => {
       shadow="md"
       borderWidth="1px"
       borderRadius="lg"
+      bg="white"
       transition="all 0.2s"
       _hover={{ shadow: "lg" }}
     >
       <Heading size="md" mb={2}>
         {recipe.title}
       </Heading>
-      <Text noOfLines={2} mb={4}>
+      <Text noOfLines={2} mb={4} color="gray.600">
         {recipe.description}
       </Text>
       <Text fontSize="sm" color="gray.500" mb={4}>
@@ -51,9 +52,10 @@ const RecipeCard = ({ recipe, onDelete }) => {
       <Stack direction="row" spacing={4}>
         <Button
           as={RouterLink}
-          to={`/recipes/${recipe._id}`}
+          to={`/recipe/${recipe._id}`}
           colorScheme="teal"
           variant="outline"
+          size="sm"
         >
           View Details
         </Button>
@@ -62,13 +64,19 @@ const RecipeCard = ({ recipe, onDelete }) => {
           <>
             <Button
               as={RouterLink}
-              to={`/recipes/${recipe._id}/edit`}
+              to={`/recipe/${recipe._id}/edit`}
               colorScheme="blue"
               variant="outline"
+              size="sm"
             >
               Edit
             </Button>
-            <Button onClick={handleDelete} colorScheme="red" variant="outline">
+            <Button
+              onClick={handleDelete}
+              colorScheme="red"
+              variant="outline"
+              size="sm"
+            >
               Delete
             </Button>
           </>
