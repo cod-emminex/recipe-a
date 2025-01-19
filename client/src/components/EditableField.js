@@ -2,15 +2,18 @@
 import React, { useState, useEffect } from "react";
 import { Flex, Text, Input, IconButton, HStack, Box } from "@chakra-ui/react";
 import { EditIcon, CheckIcon, CloseIcon } from "@chakra-ui/icons";
-import CountrySelector from "./CountrySelector";
+import CountrySelector from "./CountrySelector"; // Keep this for profile
+import CountrySelect from "./CountrySelect"; // Add this for recipes
 
 const EditableField = ({
   label,
   value,
   onSave,
+  onChange, // Add this for direct onChange handling
   name,
   placeholder = "Not set",
   type = "text",
+  isRecipeForm = false, // Add this prop to distinguish between profile and recipe form
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedValue, setEditedValue] = useState(value);
@@ -21,8 +24,8 @@ const EditableField = ({
 
   const handleSave = async () => {
     try {
-      if (type === "country" && editedValue) {
-        // For country selection, pass the complete country object
+      if (type === "country" && editedValue && !isRecipeForm) {
+        // For profile country selection, pass the complete country object
         await onSave({
           [name]: {
             code: editedValue.code,
@@ -31,7 +34,7 @@ const EditableField = ({
           },
         });
       } else {
-        await onSave({ [name]: editedValue });
+        await onSave?.({ [name]: editedValue });
       }
       setIsEditing(false);
     } catch (error) {
@@ -44,12 +47,28 @@ const EditableField = ({
     setIsEditing(false);
   };
 
+  const handleChange = (newValue) => {
+    setEditedValue(newValue);
+    if (isRecipeForm && onChange) {
+      onChange(newValue);
+    }
+  };
+
   const renderEditComponent = () => {
     if (type === "country") {
+      if (isRecipeForm) {
+        return (
+          <CountrySelect
+            value={editedValue}
+            onChange={handleChange}
+            placeholder={placeholder}
+          />
+        );
+      }
       return (
         <CountrySelector
           value={editedValue?.code || editedValue}
-          onChange={(country) => setEditedValue(country)}
+          onChange={(country) => handleChange(country)}
           isEditing={isEditing}
         />
       );
@@ -58,11 +77,27 @@ const EditableField = ({
     return (
       <Input
         value={editedValue || ""}
-        onChange={(e) => setEditedValue(e.target.value)}
+        onChange={(e) => handleChange(e.target.value)}
         placeholder={placeholder}
       />
     );
   };
+
+  // If it's a recipe form, just render the CountrySelect
+  if (isRecipeForm && type === "country") {
+    return (
+      <Box>
+        <Text fontWeight="bold" fontSize="sm" color="gray.600" mb={2}>
+          {label}
+        </Text>
+        <CountrySelect
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+        />
+      </Box>
+    );
+  }
 
   return (
     <Flex

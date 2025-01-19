@@ -11,6 +11,7 @@ const categories = [
   "Vegetarian",
   "Vegan",
   "Gluten-Free",
+  "Others",
 ];
 
 const CategorySelect = ({ value, onChange }) => {

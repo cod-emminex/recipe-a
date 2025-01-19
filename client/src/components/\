@@ -22,7 +22,7 @@ import { useAuth } from "../context/AuthContext";
 import CountrySelect from "../components/CountrySelect";
 
 // Featured recipes data
-const carouselRecipes = [
+const featuredRecipes = [
   {
     id: "carousel-1",
     title: "Classic Margherita Pizza",
@@ -82,45 +82,13 @@ const RecipeList = () => {
   const fetchRecipes = useCallback(async () => {
     try {
       const response = await recipeAPI.getAll();
-      const databaseRecipes = response.data;
-
-      // First, add carousel recipes (1-5)
-      const numberedCarouselRecipes = carouselRecipes.map((recipe, index) => ({
+      // Add featured recipes at the beginning
+      const combinedRecipes = [...featuredRecipes, ...response.data];
+      const numberedRecipes = combinedRecipes.map((recipe, index) => ({
         ...recipe,
         recipeNumber: index + 1,
       }));
-
-      // Find the highest recipe number from database recipes
-      const existingNumbers = databaseRecipes.map(
-        (recipe) => recipe.recipeNumber || 0
-      );
-      const highestExistingNumber =
-        existingNumbers.length > 0 ? Math.max(...existingNumbers) : 5; // Start after carousel recipes if no database recipes exist
-
-      // Number the database recipes starting after the highest existing number
-      const numberedDatabaseRecipes = databaseRecipes.map((recipe, index) => {
-        // If recipe already has a number higher than 5, keep it
-        if (recipe.recipeNumber && recipe.recipeNumber > 5) {
-          return recipe;
-        }
-        // Otherwise, assign new number
-        return {
-          ...recipe,
-          recipeNumber: highestExistingNumber + index + 1,
-        };
-      });
-
-      // Combine carousel and database recipes
-      const allRecipes = [
-        ...numberedCarouselRecipes,
-        ...numberedDatabaseRecipes,
-      ];
-
-      // Sort by recipe number to ensure proper order
-      const sortedRecipes = allRecipes.sort(
-        (a, b) => a.recipeNumber - b.recipeNumber
-      );
-      setRecipes(sortedRecipes);
+      setRecipes(numberedRecipes);
     } catch (error) {
       toast({
         title: "Error fetching recipes",
@@ -147,7 +115,6 @@ const RecipeList = () => {
 
         const matchesCountry =
           countryFilter === "all" ||
-          countryFilter === "" ||
           (recipe.country &&
             recipe.country.toLowerCase() === countryFilter.toLowerCase());
 
@@ -280,9 +247,7 @@ const RecipeList = () => {
                     fontFamily="Montserrat"
                     fontSize="sm"
                   >
-                    Country:{" "}
-                    {recipe.country?.name || recipe.country || "Not specified"}
-                  </Box>
+                  < Country: {recipe.country?.name || recipe.country || 'Not specified'}/Box>
                   <Box
                     fontSize="sm"
                     color="gray.500"

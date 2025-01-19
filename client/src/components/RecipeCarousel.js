@@ -52,7 +52,7 @@ const RecipeCarousel = () => {
       <Heading
         textAlign="center"
         mb={6}
-        fontFamily="Poppins"
+        fontFamily="Montserrat"
         color="teal.700"
         size="lg"
       >
@@ -67,7 +67,7 @@ const RecipeCarousel = () => {
           pagination={{ clickable: true }}
           autoplay={{
             delay: 3000,
-            disableOnInteraction: false,
+            disableOnInteraction: true,
           }}
           breakpoints={{
             640: { slidesPerView: 2 },
@@ -117,7 +117,7 @@ const RecipeCarousel = () => {
                   />
                   <Box p={4}>
                     <Text
-                      fontFamily="Poppins"
+                      fontFamily="Montserrat"
                       fontSize="lg"
                       fontWeight="semibold"
                       color="teal.700"
@@ -126,7 +126,7 @@ const RecipeCarousel = () => {
                     >
                       {recipe.title}
                     </Text>
-                    <Text fontSize="sm" color="gray.600" noOfLines={2}>
+                    <Text fontSize="m" color="gray.600" noOfLines={2}>
                       {recipe.description}
                     </Text>
                   </Box>

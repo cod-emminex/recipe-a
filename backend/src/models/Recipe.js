@@ -30,10 +30,48 @@ const recipeSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    country: {
+      type: String,
+      trim: true,
+    },
+    category: {
+      type: String,
+      trim: true,
+    },
+    cookingTime: {
+      type: Number,
+    },
+    servings: {
+      type: Number,
+    },
+    difficulty: {
+      type: String,
+      enum: ["easy", "medium", "hard"],
+      default: "medium",
+    },
+    image: {
+      type: String,
+    },
+    recipeNumber: {
+      type: Number,
+      unique: true,
+    },
   },
   {
     timestamps: true,
   }
 );
+
+recipeSchema.pre("save", async function (next) {
+  if (!this.recipeNumber) {
+    const highestRecipe = await this.constructor
+      .findOne({})
+      .sort({ recipeNumber: -1 })
+      .select("recipeNumber");
+
+    this.recipeNumber = (highestRecipe?.recipeNumber || 5) + 1;
+  }
+  next();
+});
 
 module.exports = mongoose.model("Recipe", recipeSchema);

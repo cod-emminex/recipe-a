@@ -86,11 +86,12 @@ const Home = () => {
   return (
     <Box bg={bgColor}>
       <Container maxW="container.xl" py={10}>
-        <PageTitle title="Home" />
         <VStack spacing={10} align="center" textAlign="center">
+          <PageTitle title="Home" />
+
           {/* Welcome Section */}
           <Box>
-            <WelcomeMessage fontSize="xxxl" fontFamily="elephant" />
+            <WelcomeMessage fontSize="xxxl" fontFamily="Montserrat" />
             {user && (
               <Text
                 fontSize="xxxl"
@@ -140,9 +141,7 @@ const Home = () => {
 
           {/* Featured Recipes Carousel */}
           <Box w="full" py={8}>
-            <Text fontFamily={"Montserrat"}>
-              <RecipeCarousel recipes={featuredRecipes} />
-            </Text>
+            <RecipeCarousel recipes={featuredRecipes} />
           </Box>
 
           {/* Features Grid */}

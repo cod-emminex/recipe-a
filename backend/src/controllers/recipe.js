@@ -3,9 +3,17 @@ const Recipe = require("../models/Recipe");
 
 exports.createRecipe = async (req, res) => {
   try {
+    // Find the highest recipe number in the database
+    const highestRecipe = await Recipe.findOne({})
+      .sort({ recipeNumber: -1 })
+      .select("recipeNumber");
+
+    const nextRecipeNumber = (highestRecipe?.recipeNumber || 5) + 1;
+
     const recipe = await Recipe.create({
       ...req.body,
       author: req.user._id,
+      recipeNumber: nextRecipeNumber, // Add this line
     });
 
     const populatedRecipe = await recipe.populate("author", "username");
@@ -14,7 +22,6 @@ exports.createRecipe = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
-
 exports.getRecipes = async (req, res) => {
   try {
     const recipes = await Recipe.find()

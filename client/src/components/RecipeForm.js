@@ -6,6 +6,7 @@ import ImageUpload from "./ImageUpload";
 import { validateForm } from "../utils/validation";
 import CategorySelect from "./CategorySelect";
 import { AddIcon } from "@chakra-ui/icons";
+import EditableField from "./EditableField";
 
 const RecipeForm = ({ initialData = {}, onSubmit, isLoading }) => {
   const [formData, setFormData] = useState({
@@ -18,6 +19,7 @@ const RecipeForm = ({ initialData = {}, onSubmit, isLoading }) => {
     cookingTime: initialData.cookingTime || "",
     servings: initialData.servings || "",
     difficulty: initialData.difficulty || "medium",
+    country: initialData.country || "",
   });
   const [errors, setErrors] = useState({});
   const toast = useToast();
@@ -32,7 +34,12 @@ const RecipeForm = ({ initialData = {}, onSubmit, isLoading }) => {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
-
+  const handleCountryChange = (value) => {
+    setFormData((prev) => ({
+      ...prev,
+      country: value,
+    }));
+  };
   const handleArrayChange = (index, field, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -189,7 +196,15 @@ const RecipeForm = ({ initialData = {}, onSubmit, isLoading }) => {
           }
           error={errors.category}
         />
-
+        <EditableField
+          label="Country"
+          name="country"
+          type="country"
+          value={formData.country}
+          onChange={handleCountryChange}
+          placeholder="Select country of origin"
+          isRecipeForm={true}
+        />
         <HStack spacing={4}>
           <FormField
             name="cookingTime"
