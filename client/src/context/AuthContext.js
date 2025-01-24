@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
         setUser({
           ...decoded,
           ...response.data,
-          username: decoded.username || "cod-emminex",
+          username: decoded.username,
         });
       } catch (error) {
         console.error("Auth check failed:", error);
@@ -42,13 +42,13 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (identifier, password) => {
     try {
       setLoading(true);
       setError(null);
 
-      // Call login API
-      const response = await authAPI.login({ email, password });
+      // Call login API with identifier (email or username)
+      const response = await authAPI.login({ identifier, password });
       const { token, user: userData } = response.data;
 
       // Store token
@@ -59,12 +59,15 @@ export const AuthProvider = ({ children }) => {
       setUser({
         ...decoded,
         ...userData,
-        username: userData.username || decoded.username || "cod-emminex",
+        username: userData.username || decoded.username,
       });
 
       return response.data;
     } catch (error) {
-      const errorMessage = error.response?.data?.message || "Login failed";
+      const errorMessage =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        "Invalid credentials. Please check your email/username and password.";
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {
@@ -75,6 +78,8 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       setLoading(true);
+      // You can add a logout API call here if needed
+      // await authAPI.logout();
     } finally {
       localStorage.removeItem("token");
       setUser(null);
@@ -87,7 +92,7 @@ export const AuthProvider = ({ children }) => {
     setUser((prevUser) => ({
       ...prevUser,
       ...userData,
-      username: userData.username || prevUser.username || "cod-emminex",
+      username: userData.username || prevUser.username,
     }));
   };
 

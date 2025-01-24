@@ -1,7 +1,20 @@
 // src/controllers/auth.js
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const config = require("../config");
+
+const generateToken = (user) => {
+  return jwt.sign(
+    {
+      id: user._id,
+      username: user.username,
+      email: user.email,
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: "24h" }
+  );
+};
 
 exports.register = async (req, res) => {
   try {
@@ -31,11 +44,11 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { identifier, password } = req.body;
 
-    // Check if user exists by username or email
+    // Find user by email or username
     const user = await User.findOne({
-      $or: [{ email: email || "" }, { username: username || "" }],
+      $or: [{ email: identifier }, { username: identifier }],
     });
 
     if (!user) {
@@ -48,7 +61,7 @@ exports.login = async (req, res) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // Generate JWT token
+    // Generate token
     const token = generateToken(user);
 
     res.json({

@@ -9,6 +9,7 @@ import {
   Text,
   useToast,
   VStack,
+  Divider,
 } from "@chakra-ui/react";
 import FormField from "../components/FormField";
 import { useAuth } from "../context/AuthContext";
@@ -21,7 +22,13 @@ const Register = () => {
     username: "",
     email: "",
     password: "",
-    confirmPassword: "", // Added to match validation requirements
+    confirmPassword: "",
+    // Add profile fields
+    name: "",
+    bio: "",
+    country: "",
+    bestRecipe: "",
+    favoriteCuisine: "",
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -55,11 +62,17 @@ const Register = () => {
 
     setIsLoading(true);
     try {
-      // First attempt to register
+      // Register with all profile fields
       await authAPI.register({
         username: formData.username,
         email: formData.email,
         password: formData.password,
+        // Include profile fields
+        name: formData.name,
+        bio: formData.bio,
+        country: formData.country,
+        bestRecipe: formData.bestRecipe,
+        favoriteCuisine: formData.favoriteCuisine,
       });
 
       // If registration successful, login automatically
@@ -67,7 +80,9 @@ const Register = () => {
 
       toast({
         title: "Registration successful",
-        description: `Welcome to Recipe Haven, ${formData.username}!`,
+        description: `Welcome to Recipe Haven, ${
+          formData.name || formData.username
+        }!`,
         status: "success",
         duration: 3000,
         isClosable: true,
@@ -96,6 +111,10 @@ const Register = () => {
 
         <Box as="form" w="100%" onSubmit={handleSubmit}>
           <VStack spacing={4}>
+            <Text fontSize="lg" fontWeight="bold" alignSelf="start">
+              Account Information
+            </Text>
+
             <FormField
               name="username"
               label="Username"
@@ -133,6 +152,60 @@ const Register = () => {
               onChange={handleChange}
               error={errors.confirmPassword}
               isRequired
+            />
+
+            <Divider my={4} />
+
+            <Text fontSize="lg" fontWeight="bold" alignSelf="start">
+              Profile Information
+            </Text>
+
+            <FormField
+              name="name"
+              label="Full Name"
+              value={formData.name}
+              onChange={handleChange}
+              error={errors.name}
+              isRequired
+            />
+
+            <FormField
+              name="bio"
+              label="Bio"
+              type="textarea"
+              value={formData.bio}
+              onChange={handleChange}
+              error={errors.bio}
+              placeholder="Tell us about yourself..."
+              isRequired
+            />
+
+            <FormField
+              name="country"
+              label="Country"
+              type="country"
+              value={formData.country}
+              onChange={handleChange}
+              error={errors.country}
+            />
+
+            <FormField
+              name="bestRecipe"
+              label="Best Recipe"
+              value={formData.bestRecipe}
+              onChange={handleChange}
+              error={errors.bestRecipe}
+              placeholder="What food do you love cooking most?"
+              isRequired
+            />
+
+            <FormField
+              name="favoriteCuisine"
+              label="Favorite Cuisine"
+              value={formData.favoriteCuisine}
+              onChange={handleChange}
+              error={errors.favoriteCuisine}
+              placeholder="What type of food do you love eating most?"
             />
 
             <Button

@@ -16,7 +16,7 @@ import { validateForm } from "../utils/validation";
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    email: "",
+    identifier: "", // This will store either email or username
     password: "",
   });
   const [errors, setErrors] = useState({});
@@ -54,8 +54,8 @@ const Login = () => {
 
     setIsLoading(true);
     try {
-      // Use the login function from AuthContext directly
-      await login(formData.email, formData.password);
+      // Pass both identifier and password to login
+      await login(formData.identifier, formData.password);
 
       toast({
         title: "Login successful",
@@ -89,13 +89,14 @@ const Login = () => {
         <Box as="form" w="100%" onSubmit={handleSubmit}>
           <VStack spacing={4}>
             <FormField
-              name="email"
-              label="Email"
-              type="email"
-              value={formData.email}
+              name="identifier"
+              label="Email or Username"
+              type="text"
+              value={formData.identifier}
               onChange={handleChange}
-              error={errors.email}
+              error={errors.identifier}
               isRequired
+              placeholder="Enter your email or username"
             />
 
             <FormField
