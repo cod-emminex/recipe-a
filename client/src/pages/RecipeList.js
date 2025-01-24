@@ -12,61 +12,55 @@ import {
   VStack,
   Button,
   Image,
-  Text,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { AddIcon } from "@chakra-ui/icons";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { recipeAPI } from "../services/api";
-import { useAuth } from "../context/AuthContext";
 import CountrySelect from "../components/CountrySelect";
+import CountryDisplay from "../components/countryDisplay";
 
 // Featured recipes data
 const carouselRecipes = [
   {
-    id: "carousel-1",
+    id: "1",
     title: "Classic Margherita Pizza",
     description: "Italian-style pizza with fresh basil",
     image:
       "https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?w=800&h=600&fit=crop",
     author: { username: "cod-emminex", _id: "featured-author" },
-    createdAt: new Date().toLocaleString(),
   },
   {
-    id: "carousel-2",
+    id: "2",
     title: "Creamy Mushroom Risotto",
     description: "Rich and authentic Italian risotto",
     image:
       "https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=800&h=600&fit=crop",
     author: { username: "cod-emminex", _id: "featured-author" },
-    createdAt: new Date().toLocaleString(),
   },
   {
-    id: "carousel-3",
+    id: "3",
     title: "Grilled Salmon Bowl",
     description: "Fresh salmon with quinoa and vegetables",
     image:
       "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=800&h=600&fit=crop",
     author: { username: "cod-emminex", _id: "featured-author" },
-    createdAt: new Date().toLocaleString(),
   },
   {
-    id: "carousel-4",
+    id: "4",
     title: "Thai Green Curry",
     description: "Authentic Thai curry with coconut milk",
     image:
       "https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=800&h=600&fit=crop",
     author: { username: "cod-emminex", _id: "featured-author" },
-    createdAt: new Date().toLocaleString(),
   },
   {
-    id: "carousel-5",
+    id: "5",
     title: "Chocolate Lava Cake",
     description: "Decadent dessert with molten center",
     image:
       "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=800&h=600&fit=crop",
     author: { username: "cod-emminex", _id: "featured-author" },
-    createdAt: new Date().toLocaleString(),
   },
 ];
 
@@ -74,9 +68,8 @@ const RecipeList = () => {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("newest");
+  const [sortBy, setSortBy] = useState("number");
   const toast = useToast();
-  const { user } = useAuth();
   const [countryFilter, setCountryFilter] = useState("all");
 
   const fetchRecipes = useCallback(async () => {
@@ -90,30 +83,15 @@ const RecipeList = () => {
         recipeNumber: index + 1,
       }));
 
-      // Find the highest recipe number from database recipes
-      const existingNumbers = databaseRecipes.map(
-        (recipe) => recipe.recipeNumber || 0
+      // Filter out database recipes that already have numbers 1-5
+      const filteredDatabaseRecipes = databaseRecipes.filter(
+        (recipe) => recipe.recipeNumber > 5
       );
-      const highestExistingNumber =
-        existingNumbers.length > 0 ? Math.max(...existingNumbers) : 5; // Start after carousel recipes if no database recipes exist
-
-      // Number the database recipes starting after the highest existing number
-      const numberedDatabaseRecipes = databaseRecipes.map((recipe, index) => {
-        // If recipe already has a number higher than 5, keep it
-        if (recipe.recipeNumber && recipe.recipeNumber > 5) {
-          return recipe;
-        }
-        // Otherwise, assign new number
-        return {
-          ...recipe,
-          recipeNumber: highestExistingNumber + index + 1,
-        };
-      });
 
       // Combine carousel and database recipes
       const allRecipes = [
         ...numberedCarouselRecipes,
-        ...numberedDatabaseRecipes,
+        ...filteredDatabaseRecipes,
       ];
 
       // Sort by recipe number to ensure proper order
@@ -133,7 +111,6 @@ const RecipeList = () => {
       setLoading(false);
     }
   }, [toast]);
-
   useEffect(() => {
     fetchRecipes();
   }, [fetchRecipes]);
@@ -154,6 +131,7 @@ const RecipeList = () => {
         return matchesSearch && matchesCountry;
       })
       .sort((a, b) => {
+        if (sortBy === "number") return a.recipeNumber - b.recipeNumber;
         if (sortBy === "newest")
           return new Date(b.createdAt) - new Date(a.createdAt);
         if (sortBy === "oldest")
@@ -173,18 +151,6 @@ const RecipeList = () => {
   return (
     <Container maxW="container.xl" py={8}>
       <VStack spacing={6} align="stretch">
-        {/* DateTime Display */}
-        <Box p={4} bg="white" borderRadius="lg" shadow="sm">
-          <HStack spacing={4} wrap="wrap">
-            <Text fontFamily="Montserrat">
-              Current User&apos;s Login:
-              <Text as="span" fontWeight="bold" color="teal.500" ml={2}>
-                {user?.username}
-              </Text>
-            </Text>
-          </HStack>
-        </Box>
-
         <HStack justify="space-between" align="center">
           <Heading fontFamily="Montserrat">
             All Recipes ({recipes.length})
@@ -202,6 +168,8 @@ const RecipeList = () => {
 
         <HStack mb={8} spacing={4}>
           <Input
+            name="search"
+            id="search"
             placeholder="Search recipes..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -216,10 +184,13 @@ const RecipeList = () => {
             />
           </Box>
           <Select
+            name="sortBy"
+            id="sortBy"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
             fontFamily="Montserrat"
           >
+            <option value="number">By Number</option>
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>
             <option value="title">By Title</option>
@@ -230,15 +201,15 @@ const RecipeList = () => {
         <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
           {filteredAndSortedRecipes.map((recipe) => (
             <Box
-              key={recipe._id || recipe.id}
+              key={recipe.recipeNumber}
               position="relative"
               transition="transform 0.2s"
               _hover={{ transform: "translateY(-4px)" }}
             >
               <Box
                 position="absolute"
-                top="-10px"
-                left="-10px"
+                top="5px"
+                left="5px"
                 bg="teal.500"
                 color="white"
                 borderRadius="full"
@@ -261,7 +232,7 @@ const RecipeList = () => {
                 shadow="md"
               >
                 <Image
-                  src={recipe.image}
+                  src={recipe.image || "https://placehold.co/400?text=No+Image"}
                   alt={recipe.title}
                   h="200px"
                   w="100%"
@@ -280,8 +251,11 @@ const RecipeList = () => {
                     fontFamily="Montserrat"
                     fontSize="sm"
                   >
-                    Country:{" "}
-                    {recipe.country?.name || recipe.country || "Not specified"}
+                    {recipe.country ? (
+                      <CountryDisplay country={recipe.country} />
+                    ) : (
+                      "Country: Not specified"
+                    )}{" "}
                   </Box>
                   <Box
                     fontSize="sm"
@@ -293,7 +267,7 @@ const RecipeList = () => {
                   </Box>
                   <Button
                     as={RouterLink}
-                    to={`/recipe/${recipe._id || recipe.id}`}
+                    to={`/recipe/${recipe.recipeNumber}`}
                     colorScheme="teal"
                     variant="outline"
                     w="100%"

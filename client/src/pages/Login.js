@@ -83,8 +83,8 @@ const Login = () => {
 
   return (
     <Container maxW="container.sm" py={10}>
-      <VStack spacing={8}>
-        <Heading>Login to Recipe Haven</Heading>
+      <VStack spacing={8} fontFamily="Montserrat">
+        <Heading fontFamily="Montserrat">Login to Recipe Haven</Heading>
 
         <Box as="form" w="100%" onSubmit={handleSubmit}>
           <VStack spacing={4}>

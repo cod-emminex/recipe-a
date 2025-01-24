@@ -15,6 +15,7 @@ const FormField = ({
   onChange,
   error,
   isTextarea = false,
+  autoComplete = "on",
   ...props
 }) => {
   const InputComponent = isTextarea ? Textarea : Input;
@@ -29,6 +30,7 @@ const FormField = ({
         value={value}
         fontFamily="Montserrat"
         onChange={onChange}
+        autoComplete={autoComplete}
         {...props}
       />
       <FormErrorMessage>{error}</FormErrorMessage>

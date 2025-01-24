@@ -32,8 +32,9 @@ const ImageUpload = ({ initialImage, onImageChange }) => {
 
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPreview(reader.result);
-        onImageChange(file);
+        const base64String = reader.result;
+        setPreview(base64String);
+        onImageChange(base64String); // Pass base64 string directly
       };
       reader.readAsDataURL(file);
     }

@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { CommentThread } from "../components/review/CommentThread";
 import { RatingAggregation } from "../components/review/RatingAggregation";
-import { format } from "date-fns";
 
 // src/pages/RecipeDetailPage.js
 import { ReviewsSection } from "../components/review/CommentThread";

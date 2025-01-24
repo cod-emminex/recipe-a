@@ -31,38 +31,39 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { username, email, password } = req.body;
 
-    if (!email || !password) {
-      return res
-        .status(400)
-        .json({ error: "Please provide email and password" });
-    }
+    // Check if user exists by username or email
+    const user = await User.findOne({
+      $or: [{ email: email || "" }, { username: username || "" }],
+    });
 
-    const user = await User.findOne({ email });
-
-    if (!user || !(await user.comparePassword(password))) {
+    if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ id: user._id }, config.jwtSecret, {
-      expiresIn: "1d",
-    });
+    // Verify password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    // Generate JWT token
+    const token = generateToken(user);
 
     res.json({
+      token,
       user: {
-        _id: user._id,
+        id: user._id,
         username: user.username,
         email: user.email,
+        // Add other user fields as needed
       },
-      token,
     });
   } catch (error) {
-    console.error("Login error:", error);
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
-
 exports.verifyToken = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password");

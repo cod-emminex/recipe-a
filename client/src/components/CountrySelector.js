@@ -12,7 +12,14 @@ import {
 } from "@chakra-ui/react";
 import countries from "../utils/countries";
 
-const CountrySelector = ({ value, onChange, isEditing }) => {
+const CountrySelector = ({
+  name = "country",
+  id = "country",
+  value,
+  onChange,
+  isEditing,
+  autoComplete = "off",
+}) => {
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState(null);
@@ -55,6 +62,8 @@ const CountrySelector = ({ value, onChange, isEditing }) => {
     <Box position="relative" width="100%">
       <Input
         ref={inputRef}
+        name={name}
+        id={id}
         value={
           selectedCountry
             ? `${selectedCountry.flag} ${selectedCountry.name}`
@@ -66,6 +75,7 @@ const CountrySelector = ({ value, onChange, isEditing }) => {
           setIsOpen(true);
         }}
         placeholder="Search country..."
+        autoComplete={autoComplete}
         onFocus={() => setIsOpen(true)}
         onClick={() => setIsOpen(true)}
       />

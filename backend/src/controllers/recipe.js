@@ -1,4 +1,4 @@
-// src/controllers/recipe.js
+//src/controllers/recipe.js
 const Recipe = require("../models/Recipe");
 
 exports.createRecipe = async (req, res) => {
@@ -8,12 +8,13 @@ exports.createRecipe = async (req, res) => {
       .sort({ recipeNumber: -1 })
       .select("recipeNumber");
 
-    const nextRecipeNumber = (highestRecipe?.recipeNumber || 5) + 1;
+    // If no recipes exist or highest number is less than 5, start from 6
+    const nextRecipeNumber = Math.max(highestRecipe?.recipeNumber || 0, 5) + 1;
 
     const recipe = await Recipe.create({
       ...req.body,
       author: req.user._id,
-      recipeNumber: nextRecipeNumber, // Add this line
+      recipeNumber: nextRecipeNumber,
     });
 
     const populatedRecipe = await recipe.populate("author", "username");
@@ -26,7 +27,18 @@ exports.getRecipes = async (req, res) => {
   try {
     const recipes = await Recipe.find()
       .populate("author", "username")
-      .sort({ createdAt: -1 });
+      .sort({ recipeNumber: 1 }); // Sort by recipe number instead of creation date
+    res.json(recipes);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+exports.getMyRecipes = async (req, res) => {
+  try {
+    const recipes = await Recipe.find({ author: req.user._id })
+      .populate("author", "username")
+      .sort({ recipeNumber: 1 });
     res.json(recipes);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -35,10 +47,17 @@ exports.getRecipes = async (req, res) => {
 
 exports.getRecipe = async (req, res) => {
   try {
-    const recipe = await Recipe.findById(req.params.id).populate(
-      "author",
-      "username"
-    );
+    const recipeNumber = parseInt(req.params.number);
+
+    if (isNaN(recipeNumber)) {
+      return res.status(400).json({
+        error: "Invalid recipe number",
+      });
+    }
+
+    const recipe = await Recipe.findOne({
+      recipeNumber: recipeNumber,
+    }).populate("author", "username");
 
     if (!recipe) {
       return res.status(404).json({ error: "Recipe not found" });
@@ -46,16 +65,32 @@ exports.getRecipe = async (req, res) => {
 
     res.json(recipe);
   } catch (error) {
+    console.error("Get recipe error:", error);
     res.status(400).json({ error: error.message });
   }
 };
-
 exports.updateRecipe = async (req, res) => {
   try {
+    const recipeNumber = parseInt(req.params.number); // Change from id to number to match route
+
+    if (isNaN(recipeNumber)) {
+      return res.status(400).json({ error: "Invalid recipe number" });
+    }
+
+    // Remove recipeNumber from the update data to prevent changing it
+    const updateData = { ...req.body };
+    delete updateData.recipeNumber; // Prevent changing the recipe number
+
     const recipe = await Recipe.findOneAndUpdate(
-      { _id: req.params.id, author: req.user._id },
-      req.body,
-      { new: true, runValidators: true }
+      {
+        recipeNumber: recipeNumber,
+        author: req.user._id, // Ensure user owns the recipe
+      },
+      updateData,
+      {
+        new: true,
+        runValidators: true,
+      }
     ).populate("author", "username");
 
     if (!recipe) {
@@ -66,25 +101,64 @@ exports.updateRecipe = async (req, res) => {
 
     res.json(recipe);
   } catch (error) {
+    console.error("Update error:", error);
     res.status(400).json({ error: error.message });
   }
 };
-
 exports.deleteRecipe = async (req, res) => {
+  const session = await Recipe.startSession();
+  session.startTransaction();
+
   try {
-    const recipe = await Recipe.findOneAndDelete({
-      _id: req.params.id,
+    const recipeNumber = parseInt(req.params.number);
+
+    if (isNaN(recipeNumber)) {
+      await session.abortTransaction();
+      return res.status(400).json({ error: "Invalid recipe number" });
+    }
+
+    // Find the recipe to delete
+    const recipe = await Recipe.findOne({
+      recipeNumber: recipeNumber,
       author: req.user._id,
-    });
+    }).session(session);
 
     if (!recipe) {
+      await session.abortTransaction();
       return res
         .status(404)
         .json({ error: "Recipe not found or unauthorized" });
     }
 
+    // Delete the recipe
+    await Recipe.deleteOne({ _id: recipe._id }).session(session);
+
+    // Get all recipes with higher numbers
+    const recipesToUpdate = await Recipe.find({
+      recipeNumber: { $gt: recipeNumber },
+    })
+      .sort({ recipeNumber: 1 })
+      .session(session);
+
+    // Update recipe numbers sequentially
+    const updateOperations = recipesToUpdate.map((recipe, index) => ({
+      updateOne: {
+        filter: { _id: recipe._id },
+        update: { $set: { recipeNumber: recipeNumber + index } },
+      },
+    }));
+
+    if (updateOperations.length > 0) {
+      await Recipe.bulkWrite(updateOperations, { session });
+    }
+
+    await session.commitTransaction();
     res.status(204).send();
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    await session.abortTransaction();
+    console.error("Delete error:", error);
+    res.status(400).json({ error: error.message || "Error deleting recipe" });
+  } finally {
+    session.endSession();
   }
 };

@@ -41,7 +41,7 @@ const Profile = () => {
       setIsLoading(true);
       const [profileResponse, recipesResponse] = await Promise.all([
         userAPI.getProfile(),
-        recipeAPI.getAll({ author: user.id }),
+        recipeAPI.getUserRecipes(),
       ]);
 
       // Update profile data with the response
@@ -58,7 +58,7 @@ const Profile = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [user.id, toast]);
+  }, [toast]);
 
   useEffect(() => {
     fetchUserData();
@@ -97,28 +97,25 @@ const Profile = () => {
       });
     }
   };
-  const handleRecipeDelete = async (deletedId) => {
-    try {
-      await recipeAPI.delete(deletedId);
-      setUserRecipes((prev) =>
-        prev.filter((recipe) => recipe._id !== deletedId)
-      );
-      toast({
-        title: "Recipe deleted",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-    } catch (error) {
-      toast({
-        title: "Error deleting recipe",
-        description: error.response?.data?.error || "Something went wrong",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
+  const handleRecipeDelete = useCallback(
+    async (deletedNumber) => {
+      try {
+        setUserRecipes((prevRecipes) =>
+          prevRecipes.filter((recipe) => recipe.recipeNumber !== deletedNumber)
+        );
+        toast({
+          title: "Recipe deleted",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      } catch (error) {
+        fetchUserData();
+        console.error("Recipe delete error:", error);
+      }
+    },
+    [toast, fetchUserData]
+  );
 
   if (isLoading) return <LoadingSpinner />;
 
@@ -186,6 +183,7 @@ const Profile = () => {
                 <EditableField
                   label="Name"
                   name="name"
+                  id="name"
                   value={profileData?.name}
                   onSave={handleProfileUpdate}
                   placeholder="Add your name"
@@ -249,7 +247,7 @@ const Profile = () => {
                   <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
                     {userRecipes.map((recipe) => (
                       <RecipeCard
-                        key={recipe._id}
+                        key={recipe.recipeNumber}
                         recipe={recipe}
                         onDelete={handleRecipeDelete}
                         isOwner={true}

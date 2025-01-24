@@ -1,70 +1,78 @@
 // client/src/pages/EditRecipe.js
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Container, Heading, useToast } from "@chakra-ui/react";
-import RecipeForm from "../components/RecipeForm";
-import LoadingSpinner from "../components/LoadingSpinner";
+import { Container, useToast } from "@chakra-ui/react";
 import { recipeAPI } from "../services/api";
-import { useAuth } from "../context/AuthContext";
+import LoadingSpinner from "../components/LoadingSpinner";
+import RecipeForm from "../components/RecipeForm";
+import PageTitle from "../components/PageTitle";
 
 const EditRecipe = () => {
-  const [recipe, setRecipe] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
-  const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [initialData, setInitialData] = useState(null);
 
   useEffect(() => {
-    fetchRecipe();
-  }, [id]);
+    const fetchRecipe = async () => {
+      try {
+        const response = await recipeAPI.getById(id);
+        const recipe = response.data;
 
-  const fetchRecipe = async () => {
-    try {
-      const response = await recipeAPI.getById(id);
-      const recipe = response.data;
-
-      // Check if user is the author
-      if (recipe.author._id !== user.id) {
+        // Transform the data to match the form structure
+        setInitialData({
+          ...recipe, // Keep all original data
+          category: recipe.category || "",
+          image: recipe.image || "",
+          cookingTime: recipe.cookingTime || "",
+          country: recipe.country || "",
+          servings: recipe.servings || "",
+          difficulty: recipe.difficulty || "medium",
+        });
+      } catch (error) {
         toast({
-          title: "Unauthorized",
-          description: "You can only edit your own recipes",
+          title: "Error fetching recipe",
+          description: error.message || "Something went wrong",
           status: "error",
-          duration: 3000,
+          duration: 5000,
           isClosable: true,
         });
         navigate("/recipes");
-        return;
+      } finally {
+        setLoading(false);
       }
+    };
 
-      setRecipe(recipe);
-    } catch (error) {
-      toast({
-        title: "Error fetching recipe",
-        description: error.response?.data?.error || "Something went wrong",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-      navigate("/recipes");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    fetchRecipe();
+  }, [id, toast, navigate]);
 
   const handleSubmit = async (formData) => {
-    setIsSaving(true);
+    setSubmitting(true);
     try {
-      await recipeAPI.update(id, formData);
+      // Clean the data before updating
+      const cleanedData = {
+        ...formData,
+        title: formData.title.trim(),
+        description: formData.description.trim(),
+        ingredients: formData.ingredients.filter((item) => item.trim()),
+        steps: formData.steps.filter((item) => item.trim()),
+        author: initialData.author, // Preserve the author information
+      };
+
+      await recipeAPI.update(id, cleanedData);
+
       toast({
         title: "Recipe updated successfully",
         status: "success",
         duration: 3000,
         isClosable: true,
       });
-      navigate(`/recipes/${id}`);
+
+      navigate(`/recipe/${id}`);
     } catch (error) {
+      console.error("Update error:", error);
       toast({
         title: "Error updating recipe",
         description: error.response?.data?.error || "Something went wrong",
@@ -73,20 +81,20 @@ const EditRecipe = () => {
         isClosable: true,
       });
     } finally {
-      setIsSaving(false);
+      setSubmitting(false);
     }
   };
 
-  if (isLoading) return <LoadingSpinner />;
-  if (!recipe) return null;
+  if (loading) return <LoadingSpinner />;
+  if (!initialData) return null;
 
   return (
     <Container maxW="container.md" py={8}>
-      <Heading mb={6}>Edit Recipe</Heading>
+      <PageTitle title="Edit Recipe" />
       <RecipeForm
-        initialData={recipe}
+        initialData={initialData}
         onSubmit={handleSubmit}
-        isLoading={isSaving}
+        isLoading={submitting}
       />
     </Container>
   );

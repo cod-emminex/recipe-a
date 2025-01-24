@@ -14,9 +14,20 @@ const categories = [
   "Others",
 ];
 
-const CategorySelect = ({ value, onChange }) => {
+const CategorySelect = ({
+  value,
+  onChange,
+  name = "category",
+  id = "category",
+}) => {
   return (
-    <Select value={value} onChange={onChange} placeholder="Select category">
+    <Select
+      value={value}
+      name={name}
+      id={id}
+      onChange={onChange}
+      placeholder="Select category"
+    >
       {categories.map((category) => (
         <option key={category} value={category}>
           {category}

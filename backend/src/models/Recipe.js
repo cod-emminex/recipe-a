@@ -55,6 +55,7 @@ const recipeSchema = new mongoose.Schema(
     recipeNumber: {
       type: Number,
       unique: true,
+      required: true,
     },
   },
   {
@@ -64,12 +65,16 @@ const recipeSchema = new mongoose.Schema(
 
 recipeSchema.pre("save", async function (next) {
   if (!this.recipeNumber) {
-    const highestRecipe = await this.constructor
-      .findOne({})
-      .sort({ recipeNumber: -1 })
-      .select("recipeNumber");
+    try {
+      const highestRecipe = await this.constructor
+        .findOne({})
+        .sort({ recipeNumber: -1 })
+        .select("recipeNumber");
 
-    this.recipeNumber = (highestRecipe?.recipeNumber || 5) + 1;
+      this.recipeNumber = (highestRecipe?.recipeNumber || 5) + 1;
+    } catch (error) {
+      return next(error);
+    }
   }
   next();
 });

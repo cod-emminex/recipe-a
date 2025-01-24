@@ -21,6 +21,7 @@ import Profile from "./pages/Profile";
 import CreateRecipe from "./pages/CreateRecipe";
 import RecipeDetail from "./pages/RecipeDetail";
 import RecipeList from "./pages/RecipeList";
+import EditRecipe from "./pages/EditRecipe";
 
 // Context
 import { AuthProvider } from "./context/AuthContext";
@@ -137,6 +138,7 @@ function App() {
                     />
                     <Route path="/recipes" element={<RecipeList />} />
                     <Route path="/recipe/:id" element={<RecipeDetail />} />
+                    <Route path="/recipe/:id/edit" element={<EditRecipe />} />
                   </Routes>
                 </Box>
                 <Footer />

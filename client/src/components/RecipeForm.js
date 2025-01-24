@@ -20,6 +20,7 @@ const RecipeForm = ({ initialData = {}, onSubmit, isLoading }) => {
     servings: initialData.servings || "",
     difficulty: initialData.difficulty || "medium",
     country: initialData.country || "",
+    author: initialData.author || null,
   });
   const [errors, setErrors] = useState({});
   const toast = useToast();
@@ -63,10 +64,10 @@ const RecipeForm = ({ initialData = {}, onSubmit, isLoading }) => {
     }
   };
 
-  const handleImageChange = (image) => {
+  const handleImageChange = (imageData) => {
     setFormData((prev) => ({
       ...prev,
-      image,
+      image: imageData,
     }));
   };
 
@@ -87,13 +88,13 @@ const RecipeForm = ({ initialData = {}, onSubmit, isLoading }) => {
     }
 
     // Filter out empty ingredients and steps
-    const cleanedData = {
+    const cleanedinData = {
       ...formData,
       ingredients: formData.ingredients.filter((item) => item.trim()),
       steps: formData.steps.filter((item) => item.trim()),
     };
 
-    onSubmit(cleanedData);
+    onSubmit(cleanedinData);
   };
   const renderIngredients = () => (
     <VStack align="stretch" spacing={2}>
@@ -101,6 +102,7 @@ const RecipeForm = ({ initialData = {}, onSubmit, isLoading }) => {
       {formData.ingredients.map((ingredient, index) => (
         <HStack key={index}>
           <FormField
+            name={`ingredient-${index}`}
             value={ingredient}
             onChange={(e) =>
               handleArrayChange(index, "ingredients", e.target.value)
@@ -132,6 +134,7 @@ const RecipeForm = ({ initialData = {}, onSubmit, isLoading }) => {
       {formData.steps.map((step, index) => (
         <HStack key={index}>
           <FormField
+            name={`step-${index}`}
             value={step}
             onChange={(e) => handleArrayChange(index, "steps", e.target.value)}
             placeholder={`Step ${index + 1}`}
@@ -188,6 +191,8 @@ const RecipeForm = ({ initialData = {}, onSubmit, isLoading }) => {
         />
 
         <CategorySelect
+          name="category"
+          id="category"
           value={formData.category}
           onChange={(e) =>
             handleChange({
@@ -200,6 +205,7 @@ const RecipeForm = ({ initialData = {}, onSubmit, isLoading }) => {
           label="Country"
           name="country"
           type="country"
+          id="recipe-country"
           value={formData.country}
           onChange={handleCountryChange}
           placeholder="Select country of origin"

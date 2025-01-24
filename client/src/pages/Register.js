@@ -89,10 +89,10 @@ const Register = () => {
   };
 
   return (
-    <Container maxW="container.sm" py={10}>
+    <Container maxW="container.sm" py={10} fontFamily="Montserrat">
       <PageTitle title="Register" />
       <VStack spacing={8}>
-        <Heading>Create an Account</Heading>
+        <Heading fontFamily="Montserrat">Create an Account</Heading>
 
         <Box as="form" w="100%" onSubmit={handleSubmit}>
           <VStack spacing={4}>

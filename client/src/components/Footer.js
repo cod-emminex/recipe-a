@@ -37,16 +37,16 @@ const Footer = () => {
               <Text fontSize="l" fontFamily="Montserrat">
                 Follow on Social Media:
               </Text>
-              <Link href="#" isExternal>
+              <Link href="https://www.linkedin.com/in/cod-emminex/" isExternal>
                 <Icon as={FaLinkedin} w={6} h={6} />
               </Link>
-              <Link href="#" isExternal>
+              <Link href="https://github.com/cod-emminex" isExternal>
                 <Icon as={FaGithub} w={6} h={6} />
               </Link>
-              <Link href="#" isExternal>
+              <Link href="https://x.com/cod_emminex" isExternal>
                 <Icon as={FaTwitter} w={6} h={6} />
               </Link>
-              <Link href="#" isExternal>
+              <Link href="https://www.instagram.com/king_emminex" isExternal>
                 <Icon as={FaInstagram} w={6} h={6} />
               </Link>
             </Stack>

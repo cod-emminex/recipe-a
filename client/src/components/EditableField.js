@@ -11,9 +11,11 @@ const EditableField = ({
   onSave,
   onChange, // Add this for direct onChange handling
   name,
+  id,
   placeholder = "Not set",
   type = "text",
-  isRecipeForm = false, // Add this prop to distinguish between profile and recipe form
+  isRecipeForm = false,
+  // Add this prop to distinguish between profile and recipe form
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedValue, setEditedValue] = useState(value);
@@ -59,6 +61,7 @@ const EditableField = ({
       if (isRecipeForm) {
         return (
           <CountrySelect
+            autoComplete="off"
             value={editedValue}
             onChange={handleChange}
             placeholder={placeholder}
@@ -67,6 +70,7 @@ const EditableField = ({
       }
       return (
         <CountrySelector
+          autoComplete="off"
           value={editedValue?.code || editedValue}
           onChange={(country) => handleChange(country)}
           isEditing={isEditing}
@@ -77,6 +81,9 @@ const EditableField = ({
     return (
       <Input
         value={editedValue || ""}
+        name={name}
+        id={id}
+        autoComplete="on"
         onChange={(e) => handleChange(e.target.value)}
         placeholder={placeholder}
       />

@@ -9,7 +9,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-const ProfileForm = ({ onSubmit, initialValues = {} }) => {
+const ProfileForm = ({ name, id, onSubmit, initialValues = {} }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -24,6 +24,7 @@ const ProfileForm = ({ onSubmit, initialValues = {} }) => {
           <FormLabel>Name</FormLabel>
           <Input
             name="name"
+            id={name}
             defaultValue={initialValues.name}
             placeholder="Your name"
           />
@@ -34,6 +35,7 @@ const ProfileForm = ({ onSubmit, initialValues = {} }) => {
           <Input
             name="email"
             type="email"
+            id={id}
             defaultValue={initialValues.email}
             placeholder="your.email@example.com"
           />
