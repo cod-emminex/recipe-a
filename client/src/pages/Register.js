@@ -16,6 +16,7 @@ import { useAuth } from "../context/AuthContext";
 import { validateForm } from "../utils/validation";
 import { authAPI } from "../services/api";
 import PageTitle from "../components/PageTitle";
+import EditableField from "../components/EditableField";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -36,6 +37,19 @@ const Register = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const toast = useToast();
+
+  const handleCountryChange = (value) => {
+    setFormData((prev) => ({
+      ...prev,
+      country: value,
+    }));
+    if (errors.country) {
+      setErrors((prev) => ({
+        ...prev,
+        country: "",
+      }));
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -180,13 +194,16 @@ const Register = () => {
               isRequired
             />
 
-            <FormField
+            <EditableField
               name="country"
               label="Country"
               type="country"
               value={formData.country}
-              onChange={handleChange}
+              onChange={handleCountryChange}
               error={errors.country}
+              placeholder="Where are you from?"
+              isRecipeForm={true}
+              color="gray.500"
             />
 
             <FormField

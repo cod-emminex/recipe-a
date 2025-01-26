@@ -68,7 +68,9 @@ const CreateRecipe = () => {
 
   return (
     <Container maxW="container.md" py={8}>
-      <Heading mb={6}>Create New Recipe</Heading>
+      <Heading mb={6} fontFamily="Montserrat">
+        Create New Recipe
+      </Heading>
       <RecipeForm onSubmit={handleSubmit} Loading={loading} />
     </Container>
   );

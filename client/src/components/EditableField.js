@@ -14,7 +14,7 @@ const EditableField = ({
   id,
   placeholder = "Not set",
   type = "text",
-  isRecipeForm = false,
+  isRecipeForm,
   // Add this prop to distinguish between profile and recipe form
 }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -61,6 +61,9 @@ const EditableField = ({
       if (isRecipeForm) {
         return (
           <CountrySelect
+            mb={50}
+            px={20}
+            textAlign="left"
             autoComplete="off"
             value={editedValue}
             onChange={handleChange}
@@ -93,14 +96,15 @@ const EditableField = ({
   // If it's a recipe form, just render the CountrySelect
   if (isRecipeForm && type === "country") {
     return (
-      <Box>
-        <Text fontWeight="bold" fontSize="sm" color="gray.600" mb={2}>
+      <Box width="100%">
+        <Text fontSize="m" mb={2} textAlign="left">
           {label}
         </Text>
         <CountrySelect
           value={value}
           onChange={onChange}
           placeholder={placeholder}
+          color="gray.600"
         />
       </Box>
     );

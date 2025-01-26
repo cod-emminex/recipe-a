@@ -29,13 +29,15 @@ const CountrySelect = ({
       placeholder={placeholder}
       fontFamily="Montserrat"
       autoComplete={autoComplete}
+      textAlign="left"
+      isTextArea
     >
       {options.map((country) => (
         <option
           key={country.code}
           value={country.code === "all" ? "all" : country.name}
         >
-          {country.name}
+          {`${country.flag} ${country.name}`}
         </option>
       ))}
     </Select>
