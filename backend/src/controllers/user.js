@@ -1,7 +1,7 @@
 // backend/src/controllers/user.js
 const User = require("../models/User");
 const Recipe = require("../models/Recipe");
-
+const mongoose = require("mongoose");
 // Get user profile
 exports.getUser = async (req, res) => {
   try {
@@ -95,9 +95,12 @@ exports.getUserByUsername = async (req, res) => {
 exports.getCommunityUsers = async (req, res) => {
   try {
     const currentUserId = req.user?._id;
+
     const users = await User.find({})
       .select("-password")
-      .populate("recipes", "title image")
+      .populate("recipes")
+      .populate("followers", "_id username")
+      .populate("following", "_id username")
       .lean();
 
     const usersWithStats = users.map((user) => ({
@@ -107,7 +110,7 @@ exports.getCommunityUsers = async (req, res) => {
       followingCount: user.following?.length || 0,
       isFollowing: currentUserId
         ? user.followers?.some(
-            (id) => id.toString() === currentUserId.toString()
+            (follower) => follower._id.toString() === currentUserId.toString()
           )
         : false,
       isSelf: currentUserId
@@ -117,107 +120,86 @@ exports.getCommunityUsers = async (req, res) => {
 
     res.json(usersWithStats);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error in getCommunityUsers:", error);
+    res.status(500).json({
+      message: "Failed to fetch community members",
+      error: error.message,
+    });
   }
 };
-
 exports.followUser = async (req, res) => {
   try {
-    const userToFollowId = req.params.userId;
-    const currentUserId = req.user._id;
+    const { userId } = req.params;
+    const currentUser = req.user;
 
     // Check if trying to follow self
-    if (userToFollowId === currentUserId.toString()) {
-      return res.status(400).json({
-        error: "You cannot follow yourself",
-      });
+    if (userId === currentUser._id.toString()) {
+      return res.status(400).json({ message: "You cannot follow yourself" });
     }
 
-    // Get both users
-    const [userToFollow, currentUser] = await Promise.all([
-      User.findById(userToFollowId),
-      User.findById(currentUserId),
-    ]);
-
-    if (!userToFollow || !currentUser) {
-      return res.status(404).json({
-        error: "User not found",
-      });
+    // Check if user to follow exists
+    const userToFollow = await User.findById(userId);
+    if (!userToFollow) {
+      return res.status(404).json({ message: "User not found" });
     }
 
     // Check if already following
-    const isAlreadyFollowing = currentUser.following.includes(userToFollowId);
+    const isAlreadyFollowing = currentUser.following.includes(userId);
     if (isAlreadyFollowing) {
-      return res.status(400).json({
-        error: "You are already following this user",
-      });
+      return res
+        .status(400)
+        .json({ message: "You are already following this user" });
     }
 
-    // Add to following/followers
-    currentUser.following.push(userToFollowId);
-    userToFollow.followers.push(currentUserId);
-
-    await Promise.all([currentUser.save(), userToFollow.save()]);
-
-    res.json({
-      success: true,
-      message: `You are now following ${userToFollow.username}`,
-      followersCount: userToFollow.followers.length,
-      followingCount: currentUser.following.length,
-      timestamp: new Date().toISOString(),
+    // Add to following array of current user
+    await User.findByIdAndUpdate(currentUser._id, {
+      $addToSet: { following: userId },
     });
+
+    // Add to followers array of target user
+    await User.findByIdAndUpdate(userId, {
+      $addToSet: { followers: currentUser._id },
+    });
+
+    res.status(200).json({ message: "Successfully followed user" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Follow user error:", error);
+    res.status(500).json({ message: "Failed to follow user" });
   }
 };
 
 exports.unfollowUser = async (req, res) => {
   try {
-    const userToUnfollowId = req.params.userId;
-    const currentUserId = req.user._id;
+    const { userId } = req.params;
+    const currentUser = req.user;
 
-    // Get both users
-    const [userToUnfollow, currentUser] = await Promise.all([
-      User.findById(userToUnfollowId),
-      User.findById(currentUserId),
-    ]);
-
-    if (!userToUnfollow || !currentUser) {
-      return res.status(404).json({
-        error: "User not found",
-      });
+    // Check if trying to unfollow self
+    if (userId === currentUser._id.toString()) {
+      return res.status(400).json({ message: "You cannot unfollow yourself" });
     }
 
-    // Check if actually following
-    const isFollowing = currentUser.following.includes(userToUnfollowId);
-    if (!isFollowing) {
-      return res.status(400).json({
-        error: "You are not following this user",
-      });
+    // Check if user to unfollow exists
+    const userToUnfollow = await User.findById(userId);
+    if (!userToUnfollow) {
+      return res.status(404).json({ message: "User not found" });
     }
 
-    // Remove from following/followers
-    currentUser.following = currentUser.following.filter(
-      (id) => id.toString() !== userToUnfollowId
-    );
-    userToUnfollow.followers = userToUnfollow.followers.filter(
-      (id) => id.toString() !== currentUserId.toString()
-    );
-
-    await Promise.all([currentUser.save(), userToUnfollow.save()]);
-
-    res.json({
-      success: true,
-      message: `You have unfollowed ${userToUnfollow.username}`,
-      followersCount: userToUnfollow.followers.length,
-      followingCount: currentUser.following.length,
-      timestamp: new Date().toISOString(),
+    // Remove from following array of current user
+    await User.findByIdAndUpdate(currentUser._id, {
+      $pull: { following: userId },
     });
+
+    // Remove from followers array of target user
+    await User.findByIdAndUpdate(userId, {
+      $pull: { followers: currentUser._id },
+    });
+
+    res.status(200).json({ message: "Successfully unfollowed user" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Unfollow user error:", error);
+    res.status(500).json({ message: "Failed to unfollow user" });
   }
 };
-
 exports.getFollowing = async (req, res) => {
   try {
     const userId = req.params.userId;
@@ -253,41 +235,52 @@ exports.getFollowers = async (req, res) => {
 };
 
 // Update your existing getUserProfile to include following status
+// backend/src/controllers/user.js
 exports.getUserProfile = async (req, res) => {
   try {
-    const userId = req.params.userId;
+    const { username } = req.params;
     const currentUserId = req.user?._id;
 
-    const user = await User.findById(userId)
+    const user = await User.findOne({ username })
       .select("-password")
-      .populate("recipes", "title image createdAt")
+      .populate("recipes")
+      .populate("followers")
+      .populate("following")
       .lean();
 
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    const profile = {
+    // Convert ObjectIds to strings for comparison
+    const followersIds = user.followers.map((f) => f._id.toString());
+    const currentUserIdString = currentUserId ? currentUserId.toString() : null;
+
+    const profileData = {
       ...user,
       recipesCount: user.recipes?.length || 0,
       followersCount: user.followers?.length || 0,
       followingCount: user.following?.length || 0,
-      isFollowing: currentUserId
-        ? user.followers.some(
-            (id) => id.toString() === currentUserId.toString()
-          )
+      // Explicitly check if current user's ID is in followers array
+      isFollowing: currentUserIdString
+        ? followersIds.includes(currentUserIdString)
         : false,
-      isSelf: currentUserId
-        ? user._id.toString() === currentUserId.toString()
-        : false,
+      isSelf: currentUserIdString === user._id.toString(),
     };
 
-    res.json(profile);
+    console.log("Profile Data:", {
+      username: user.username,
+      currentUserId: currentUserIdString,
+      followersIds,
+      isFollowing: profileData.isFollowing,
+    });
+
+    res.json(profileData);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error in getUserProfile:", error);
+    res.status(500).json({ message: "Failed to fetch user profile" });
   }
 };
-
 exports.getUserRecipes = async (req, res) => {
   try {
     const userId = req.params.userId;

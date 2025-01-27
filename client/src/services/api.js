@@ -87,8 +87,11 @@ export const userAPI = {
   getProfile: () => api.get("/users/me"),
   updateProfile: (userData) => api.put("/users/me", userData),
   getPublicProfile: (username) => api.get(`/users/${username}`),
-  follow: (username) => api.post(`/users/${username}/follow`),
-  unfollow: (username) => api.delete(`/users/${username}/follow`),
+  getCommunityUsers: () => api.get("/users/community"),
+  follow: (userId) => api.post(`/users/follow/${userId}`),
+  unfollow: (userId) => api.post(`/users/unfollow/${userId}`),
+  getFollowers: (username) => api.get(`/users/${username}/followers`),
+  getFollowing: (username) => api.get(`/users/${username}/following`),
 };
 
 export default api;

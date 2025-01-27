@@ -4,33 +4,28 @@ import { Select } from "@chakra-ui/react";
 import countries from "../utils/countries";
 
 const CountrySelect = ({
-  name = "country",
-  id = "country",
   value,
   onChange,
   placeholder,
   includeAll = false,
-  autoComplete = "country",
 }) => {
   const handleChange = (e) => {
     onChange(e.target.value);
   };
 
   const options = includeAll
-    ? [{ code: "all", name: "All" }].concat(countries)
+    ? [{ code: "all", name: "All", flag: "" }, ...countries]
     : countries;
 
   return (
     <Select
-      name={name}
-      id={id}
+      name="country"
+      id="country"
       value={value || ""}
       onChange={handleChange}
       placeholder={placeholder}
       fontFamily="Montserrat"
-      autoComplete={autoComplete}
-      textAlign="left"
-      isTextArea
+      autoComplete="on"
     >
       {options.map((country) => (
         <option

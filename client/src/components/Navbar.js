@@ -29,6 +29,7 @@ import {
   FaUserPlus,
   FaSignOutAlt,
   FaClock,
+  FaUsers,
 } from "react-icons/fa";
 
 const Navbar = () => {
@@ -77,7 +78,7 @@ const Navbar = () => {
       <Button
         colorScheme="white"
         variant="solid"
-        px={10}
+        px={20}
         py={1}
         borderRadius="full"
       ></Button>
@@ -88,10 +89,21 @@ const Navbar = () => {
         colorScheme="teal"
         variant="ghost"
         color="white"
-        px={5}
+        px={2}
         leftIcon={<FaUtensils />}
       >
         Recipes
+      </Button>
+      <Button
+        as={RouterLink}
+        to="/community"
+        colorScheme="teal"
+        variant="ghost"
+        color="white"
+        px={2}
+        leftIcon={<FaUsers />}
+      >
+        Community
       </Button>
       {user ? (
         <>
@@ -101,7 +113,7 @@ const Navbar = () => {
             colorScheme="teal"
             variant="ghost"
             color="white"
-            px={5}
+            px={2}
             leftIcon={<FaPlus />}
           >
             Create Recipe
@@ -113,7 +125,7 @@ const Navbar = () => {
             colorScheme="teal"
             variant="ghost"
             color="white"
-            px={5}
+            px={2}
             leftIcon={<FaUser />}
           >
             Profile
@@ -122,7 +134,7 @@ const Navbar = () => {
             onClick={handleLogout}
             colorScheme="teal"
             variant="solid"
-            px={5}
+            px={2}
             leftIcon={<FaSignOutAlt />}
           >
             Logout
@@ -155,7 +167,7 @@ const Navbar = () => {
   );
 
   return (
-    <Box bg="teal.500" px={4} py={3}>
+    <Box bg="teal.500" px={10} py={4}>
       <Flex
         alignItems="center"
         justifyContent="space-between"
@@ -164,30 +176,14 @@ const Navbar = () => {
         fontFamily="Montserrat"
       >
         {/* Logo and DateTime Section */}
-        <HStack spacing={4}>
+        <HStack spacing={20}>
           <Logo />
-          <Badge
-            display={{ base: "none", md: "flex" }}
-            colorScheme="white"
-            variant="subtle"
-            px={2}
-            py={1}
-            borderRadius="full"
-            color="white"
-            fontSize="s"
-            fontFamily="Montserrat"
-          >
-            <HStack spacing={2}>
-              <FaClock />
-              <Text>{currentDateTime}</Text>
-            </HStack>
-          </Badge>
         </HStack>
 
         {/* Desktop Navigation */}
         <Stack
           direction="row"
-          spacing={7}
+          spacing={10}
           align="right"
           display={{ base: "none", md: "flex" }}
         >

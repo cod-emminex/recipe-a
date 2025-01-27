@@ -120,7 +120,7 @@ const Profile = () => {
   if (isLoading) return <LoadingSpinner />;
 
   return (
-    <Container maxW="container.xl" py={8}>
+    <Container maxW="container.xl" py={8} fontFamily="Montserrat">
       <PageTitle title="Profile" />
       <VStack spacing={8} align="stretch">
         {/* Profile Header */}
@@ -161,11 +161,11 @@ const Profile = () => {
               </Stat>
               <Stat>
                 <StatLabel>Followers</StatLabel>
-                <StatNumber>{profileData?.followersCount || 0}</StatNumber>
+                <StatNumber>{user.followers.length}</StatNumber>
               </Stat>
               <Stat>
                 <StatLabel>Following</StatLabel>
-                <StatNumber>{profileData?.followingCount || 0}</StatNumber>
+                <StatNumber>{user.following.length}</StatNumber>
               </Stat>
             </StatGroup>
           </Box>

@@ -18,10 +18,12 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
+import PublicProfile from "./pages/PublicProfile";
 import CreateRecipe from "./pages/CreateRecipe";
 import RecipeDetail from "./pages/RecipeDetail";
 import RecipeList from "./pages/RecipeList";
 import EditRecipe from "./pages/EditRecipe";
+import Community from "./pages/Community";
 
 // Context
 import { AuthProvider } from "./context/AuthContext";
@@ -120,6 +122,11 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="/community" element={<Community />} />
+                    <Route
+                      path="/profile/:username"
+                      element={<PublicProfile />}
+                    />
                     <Route
                       path="/profile"
                       element={

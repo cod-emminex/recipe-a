@@ -92,13 +92,7 @@ const Home = () => {
           {/* Welcome Section */}
           <Box>
             <WelcomeMessage fontSize="xxxl" fontFamily="Montserrat" />
-            {user && (
-              <Text
-                fontSize="xxxl"
-                color="teal.600"
-                fontFamily="georgia"
-              ></Text>
-            )}
+            {user && <Text fontSize="xxxl" color="teal.600"></Text>}
           </Box>
           <Text
             fontSize={{ base: "xxl", md: "2xl" }}

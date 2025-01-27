@@ -1,6 +1,7 @@
 // src/app.js
 const express = require("express");
 const cors = require("cors");
+const errorHandler = require("./middleware/error");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
@@ -20,5 +21,7 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: err.message });
 });
+
+app.use(errorHandler);
 
 module.exports = app;

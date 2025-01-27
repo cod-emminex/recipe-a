@@ -1,216 +1,218 @@
 // client/src/pages/Community.js
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Box,
   Container,
-  Grid,
-  Heading,
-  Text,
-  Image,
-  Button,
+  SimpleGrid,
   Input,
+  InputGroup,
+  InputLeftElement,
   VStack,
-  HStack,
+  Text,
   useToast,
-  Avatar,
+  Spinner,
+  Center,
 } from "@chakra-ui/react";
 import { SearchIcon } from "@chakra-ui/icons";
+import UserCard from "../components/UserCard";
+import PageTitle from "../components/PageTitle";
 import { useAuth } from "../context/AuthContext";
-import ReactFlagSelect from "react-flag-select";
-
-const UserCard = ({ user, onFollow, isFollowing }) => {
-  return (
-    <Box
-      p={5}
-      shadow="md"
-      borderWidth="1px"
-      borderRadius="lg"
-      bg="white"
-      position="relative"
-    >
-      <VStack spacing={4} align="center">
-        <Avatar size="xl" name={user.username} src={user.avatar} />
-        <Box textAlign="center">
-          <Heading size="md">{user.username}</Heading>
-          <Text mt={2}>{user.bio}</Text>
-          <HStack mt={2} justify="center">
-            <ReactFlagSelect
-              selected={user.country}
-              disabled
-              showSelectedLabel={false}
-            />
-            <Text>{user.recipesCount} Recipes</Text>
-          </HStack>
-        </Box>
-        <Button
-          colorScheme={isFollowing ? "red" : "teal"}
-          onClick={() => onFollow(user._id)}
-          size="sm"
-          width="full"
-        >
-          {isFollowing ? "Unfollow" : "Follow"}
-        </Button>
-      </VStack>
-    </Box>
-  );
-};
+import { userAPI } from "../services/api";
 
 const Community = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { user: currentUser } = useAuth();
+  const [loading, setLoading] = useState(true);
   const toast = useToast();
+  const { user: currentUser, isAuthenticated } = useAuth();
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
-      setLoading(true);
-      const response = await fetch("/api/users/community");
-      const data = await response.json();
-      setUsers(data);
+      const response = await userAPI.getCommunityUsers();
+      // Map through users and add isFollowing status
+      const usersWithFollowStatus = response.data.map((u) => ({
+        ...u,
+        isFollowing:
+          u.followers?.some((follower) => follower._id === currentUser?._id) ||
+          false,
+      }));
+      setUsers(usersWithFollowStatus);
     } catch (error) {
+      console.error("Community fetch error:", error);
       toast({
-        title: "Error fetching users",
-        description: error.message,
+        title: "Error",
+        description:
+          error.response?.data?.error || "Failed to load community members",
         status: "error",
-        duration: 3000,
+        duration: 5000,
+        isClosable: true,
       });
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast, currentUser]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const handleFollow = async (userId) => {
-    try {
-      const response = await fetch(`/api/users/follow/${userId}`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
+    if (!isAuthenticated || !currentUser) {
+      toast({
+        title: "Authentication Required",
+        description: "Please login to follow other users",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
       });
+      return;
+    }
 
-      if (!response.ok) throw new Error("Failed to follow user");
+    try {
+      await userAPI.follow(userId);
 
       // Update local state
-      setUsers(
-        users.map((user) =>
-          user._id === userId
+      setUsers((prevUsers) =>
+        prevUsers.map((u) =>
+          u._id === userId
             ? {
-                ...user,
+                ...u,
                 isFollowing: true,
-                followersCount: user.followersCount + 1,
+                followersCount: (u.followersCount || 0) + 1,
+                followers: [...(u.followers || []), currentUser._id],
               }
-            : user
+            : u
         )
       );
 
       toast({
         title: "Success",
-        description: "User followed successfully",
+        description: "Successfully followed user",
         status: "success",
-        duration: 2000,
+        duration: 3000,
+        isClosable: true,
       });
     } catch (error) {
+      console.error("Follow error:", error);
       toast({
         title: "Error",
-        description: error.message,
+        description: error.response?.data?.message || "Failed to follow user",
         status: "error",
         duration: 3000,
+        isClosable: true,
       });
     }
   };
 
   const handleUnfollow = async (userId) => {
-    try {
-      const response = await fetch(`/api/users/unfollow/${userId}`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
+    if (!isAuthenticated || !currentUser) {
+      toast({
+        title: "Authentication Required",
+        description: "Please login to unfollow users",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
       });
+      return;
+    }
 
-      if (!response.ok) throw new Error("Failed to unfollow user");
+    try {
+      await userAPI.unfollow(userId);
 
       // Update local state
-      setUsers(
-        users.map((user) =>
-          user._id === userId
+      setUsers((prevUsers) =>
+        prevUsers.map((u) =>
+          u._id === userId
             ? {
-                ...user,
+                ...u,
                 isFollowing: false,
-                followersCount: user.followersCount - 1,
+                followersCount: Math.max((u.followersCount || 0) - 1, 0),
+                followers: (u.followers || []).filter(
+                  (id) => id !== currentUser._id
+                ),
               }
-            : user
+            : u
         )
       );
 
       toast({
         title: "Success",
-        description: "User unfollowed successfully",
+        description: "Successfully unfollowed user",
         status: "success",
-        duration: 2000,
+        duration: 3000,
+        isClosable: true,
       });
     } catch (error) {
+      console.error("Unfollow error:", error);
       toast({
         title: "Error",
-        description: error.message,
+        description: error.response?.data?.message || "Failed to unfollow user",
         status: "error",
         duration: 3000,
+        isClosable: true,
       });
     }
   };
+
   const filteredUsers = users.filter(
     (user) =>
-      user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.bio?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  return (
-    <Container maxW="container.xl" py={8}>
-      <VStack spacing={8}>
-        <Heading>Recipe Community</Heading>
+  if (loading) {
+    return (
+      <Center h="calc(100vh - 60px)">
+        <Spinner size="xl" color="teal.500" />
+      </Center>
+    );
+  }
 
-        <Box width="full">
-          <HStack>
+  return (
+    <Box py={8}>
+      <Container maxW="container.xl" fontFamily="Montserrat">
+        <VStack spacing={8}>
+          <PageTitle title="Recipe Community" />
+
+          <InputGroup maxW="600px" fontFamily="Montserrat">
+            <InputLeftElement pointerEvents="none">
+              <SearchIcon color="gray.400" />
+            </InputLeftElement>
             <Input
-              placeholder="Search users..."
+              name="search"
+              id="search"
+              placeholder="Search community members..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               size="lg"
+              borderRadius="full"
             />
-            <Button leftIcon={<SearchIcon />} colorScheme="teal" size="lg">
-              Search
-            </Button>
-          </HStack>
-        </Box>
+          </InputGroup>
 
-        <Grid
-          templateColumns={[
-            "1fr",
-            "repeat(2, 1fr)",
-            "repeat(3, 1fr)",
-            "repeat(4, 1fr)",
-          ]}
-          gap={6}
-          width="full"
-        >
-          {filteredUsers.map((user) => (
-            <UserCard
-              key={user._id}
-              user={user}
-              onFollow={handleFollow}
-              isFollowing={user.followers?.includes(currentUser?.id)}
-            />
-          ))}
-        </Grid>
-      </VStack>
-    </Container>
+          {filteredUsers.length > 0 ? (
+            <SimpleGrid
+              columns={{ base: 1, sm: 2, md: 3, lg: 4 }}
+              spacing={6}
+              w="full"
+            >
+              {filteredUsers.map((user) => (
+                <UserCard
+                  key={user._id}
+                  user={user}
+                  onFollow={handleFollow}
+                  onUnfollow={handleUnfollow}
+                  isAuthenticated={isAuthenticated}
+                  currentUser={currentUser}
+                />
+              ))}
+            </SimpleGrid>
+          ) : (
+            <Text>No users found matching your search.</Text>
+          )}
+        </VStack>
+      </Container>
+    </Box>
   );
 };
 

@@ -9,6 +9,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const checkAuth = async () => {
     const token = localStorage.getItem("token");
@@ -23,17 +24,23 @@ export const AuthProvider = ({ children }) => {
 
         // Verify token with backend
         const response = await authAPI.verifyToken();
-        setUser({
+        const userData = {
           ...decoded,
           ...response.data,
           username: decoded.username,
-        });
+        };
+        setUser(userData);
+        setIsAuthenticated(true);
       } catch (error) {
         console.error("Auth check failed:", error);
         localStorage.removeItem("token");
         setUser(null);
+        setIsAuthenticated(false);
         setError(error.message);
       }
+    } else {
+      setUser(null);
+      setIsAuthenticated(false);
     }
     setLoading(false);
   };
@@ -56,11 +63,13 @@ export const AuthProvider = ({ children }) => {
 
       // Decode and set user
       const decoded = jwtDecode(token);
-      setUser({
+      const newUserData = {
         ...decoded,
         ...userData,
         username: userData.username || decoded.username,
-      });
+      };
+      setUser(newUserData);
+      setIsAuthenticated(true);
 
       return response.data;
     } catch (error) {
@@ -83,6 +92,7 @@ export const AuthProvider = ({ children }) => {
     } finally {
       localStorage.removeItem("token");
       setUser(null);
+      setIsAuthenticated(false);
       setError(null);
       setLoading(false);
     }
@@ -104,6 +114,7 @@ export const AuthProvider = ({ children }) => {
     error,
     updateUser,
     checkAuth,
+    isAuthenticated, // Added isAuthenticated to the context value
   };
 
   return (
