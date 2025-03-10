@@ -51,12 +51,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    recipes: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Recipe",
-      },
-    ],
     followers: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -72,18 +66,18 @@ const userSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-    toJSON: {
-      virtuals: true,
-    },
+    toJSON: { virtuals: true },
     toObject: { virtuals: true },
   }
 );
 
 // Virtual fields for counts
-userSchema.virtual("recipesCount").get(function () {
-  return this.recipes ? this.recipes.length : 0;
+userSchema.virtual("recipes", {
+  ref: "Recipe",
+  localField: "_id",
+  foreignField: "author",
+  count: true, // This will only get the count
 });
-
 userSchema.virtual("followersCount").get(function () {
   return this.followers ? this.followers.length : 0;
 });

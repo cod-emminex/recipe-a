@@ -3,16 +3,35 @@ const User = require("../models/User");
 const Recipe = require("../models/Recipe");
 const mongoose = require("mongoose");
 // Get user profile
-exports.getUser = async (req, res) => {
+exports.getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select("-password");
-    res.json(user);
+    const user = await User.findById(req.user._id)
+      .select("-password")
+      .populate("followers")
+      .populate("following")
+      .populate("recipes")
+      .lean();
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const userData = {
+      ...user,
+      recipesCount: user.recipes?.length || 0,
+      followersCount: user.followers?.length || 0,
+      followingCount: user.following?.length || 0,
+    };
+
+    res.json(userData);
   } catch (error) {
-    console.error("Get user error:", error);
-    res.status(500).json({ error: "Error fetching user data" });
+    console.error("Get profile error:", error);
+    res.status(500).json({
+      message: "Error fetching profile",
+      error: error.message,
+    });
   }
 };
-
 // Update user profile
 exports.updateUser = async (req, res) => {
   try {
@@ -96,16 +115,32 @@ exports.getCommunityUsers = async (req, res) => {
   try {
     const currentUserId = req.user?._id;
 
+    // First, get all users
     const users = await User.find({})
       .select("-password")
-      .populate("recipes")
       .populate("followers", "_id username")
       .populate("following", "_id username")
       .lean();
 
+    // Get recipe counts for all users in a single query
+    const recipeCounts = await Recipe.aggregate([
+      {
+        $group: {
+          _id: "$author",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Create a map of user ID to recipe count
+    const recipeCountMap = new Map(
+      recipeCounts.map((item) => [item._id.toString(), item.count])
+    );
+
+    // Map users with their stats
     const usersWithStats = users.map((user) => ({
       ...user,
-      recipesCount: user.recipes?.length || 0,
+      recipesCount: recipeCountMap.get(user._id.toString()) || 0,
       followersCount: user.followers?.length || 0,
       followingCount: user.following?.length || 0,
       isFollowing: currentUserId
@@ -117,6 +152,15 @@ exports.getCommunityUsers = async (req, res) => {
         ? user._id.toString() === currentUserId.toString()
         : false,
     }));
+
+    console.log(
+      "Users with stats:",
+      usersWithStats.map((u) => ({
+        username: u.username,
+        recipesCount: u.recipesCount,
+        followersCount: u.followersCount,
+      }))
+    );
 
     res.json(usersWithStats);
   } catch (error) {

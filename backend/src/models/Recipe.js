@@ -29,6 +29,7 @@ const recipeSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      index: true,
     },
     country: {
       type: String,
@@ -57,6 +58,14 @@ const recipeSchema = new mongoose.Schema(
       unique: true,
       required: true,
     },
+    recipesCount: {
+      type: Number,
+      default: 0,
+    },
+    recipeCount: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
@@ -78,5 +87,6 @@ recipeSchema.pre("save", async function (next) {
   }
   next();
 });
+recipeSchema.index({ author: 1 });
 
 module.exports = mongoose.model("Recipe", recipeSchema);

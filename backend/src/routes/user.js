@@ -5,7 +5,7 @@ const userController = require("../controllers/user");
 const { protect } = require("../middleware/auth");
 
 // Private routes (require authentication)
-router.get("/me", protect, userController.getUser);
+router.get("/me", protect, userController.getProfile);
 router.put("/me", protect, userController.updateUser);
 router.get("/community", userController.getCommunityUsers);
 

@@ -157,15 +157,15 @@ const Profile = () => {
             <StatGroup>
               <Stat>
                 <StatLabel>Recipes</StatLabel>
-                <StatNumber>{userRecipes.length}</StatNumber>
+                <StatNumber>{userRecipes?.length}</StatNumber>
               </Stat>
               <Stat>
                 <StatLabel>Followers</StatLabel>
-                <StatNumber>{user.followers.length}</StatNumber>
+                <StatNumber>{profileData?.followers?.length}</StatNumber>
               </Stat>
               <Stat>
                 <StatLabel>Following</StatLabel>
-                <StatNumber>{user.following.length}</StatNumber>
+                <StatNumber>{profileData?.following?.length}</StatNumber>
               </Stat>
             </StatGroup>
           </Box>
